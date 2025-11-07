@@ -585,6 +585,14 @@
                                 <option value="entaclute">Entaclute</option>
                             </select>
                         </div>
+                        <div class="field" id="morphotype-container" style="display:none;">
+                            <label for="morphotype">Morphotype</label>
+                            <select id="morphotype" onchange="onMorphotypeChanged()">
+                                <option value="">-- Choisir --</option>
+                                <option value="leger">léger</option>
+                                <option value="massif">massif</option>
+                            </select>
+                        </div>
                         <div class="field">
                             <label for="palier">Palier</label>
                             <input type="number" id="palier" value="1" min="1" max="9" onchange="calculateDerived(); validateCompetences();">
@@ -1728,11 +1736,15 @@
             else if (forVal >= 70) impact = 1;
             document.getElementById('impact').innerText = impact >= 0 ? '+' + impact : impact;
 
-            // Mouvement
+            // Mouvement (base selon AGI)
             let mouvement = '5m';
             if (agi <= 30) mouvement = '4m';
             else if (agi >= 70) mouvement = '6m';
-            document.getElementById('mouvement').innerText = mouvement;
+            // Appliquer le delta d'affichage du morphotype (Borbybudy)
+            const mouvDelta = (typeof getMorphotypeMovementDelta === 'function') ? getMorphotypeMovementDelta() : 0;
+            const mouvBaseNum = parseInt(mouvement, 10) || 0;
+            const mouvFinalNum = mouvBaseNum + mouvDelta;
+            document.getElementById('mouvement').innerText = (mouvFinalNum || 0) + 'm';
 
             // Jetons Vitesse (avec bonus de Vif comme l'éclair si applicable)
             let jetonsVitesse = Math.floor(agi / 30);
@@ -1743,7 +1755,10 @@
                     if (modifs.jetonsVitesseBonus) jetonsVitesse += modifs.jetonsVitesseBonus;
                 }
             });
-            document.getElementById('jetons-vitesse').innerText = jetonsVitesse;
+            // Appliquer le delta d'affichage du morphotype (Borbybudy)
+            const speedDelta = (typeof getMorphotypeSpeedDelta === 'function') ? getMorphotypeSpeedDelta() : 0;
+            const jetonsFinal = jetonsVitesse + speedDelta;
+            document.getElementById('jetons-vitesse').innerText = jetonsFinal;
 
             // Cartes fin combat (peut utiliser INT si Réservoir)
             let useIntForCards = false;
@@ -2281,16 +2296,24 @@
             const impact = parseInt(document.getElementById('impact').innerText) || 0;
             const impactDisplay = document.getElementById('impact-armes-display');
 
+            let baseText = '0';
+            let baseColor = '#667eea';
             if (impact > 0) {
-                impactDisplay.innerText = `+${impact}`;
-                impactDisplay.style.color = '#2e7d32';
+                baseText = `+${impact}`;
+                baseColor = '#2e7d32';
             } else if (impact < 0) {
-                impactDisplay.innerText = impact;
-                impactDisplay.style.color = '#c62828';
-            } else {
-                impactDisplay.innerText = '0';
-                impactDisplay.style.color = '#667eea';
+                baseText = `${impact}`;
+                baseColor = '#c62828';
             }
+
+            // Morphotype delta (affichage seulement) sur dégâts CàC
+            const morphMod = (typeof getMorphotypeDamageMod === 'function') ? getMorphotypeDamageMod() : 0;
+            const morphHtml = morphMod !== 0
+                ? `<span class="arme-impact-inline ${morphMod > 0 ? 'positive' : 'negative'}">${morphMod > 0 ? '+' : ''}${morphMod}</span>`
+                : '';
+
+            impactDisplay.innerHTML = baseText + morphHtml;
+            impactDisplay.style.color = baseColor;
         }
 
         // Mettre à  jour l'affichage du rang et des dégâts d'une arme
@@ -2332,13 +2355,21 @@
 
 
             // Ajouter l'Impact seulement pour les armes C à C
-            if (type === 'cac' && impact !== 0) {
-                if (impact > 0) {
-                    degatsText += `<span class="arme-impact-inline positive">+${impact}</span>`;
-                } else {
-                    degatsText += `<span class="arme-impact-inline negative">${impact}</span>`;
+            if (type === 'cac') {
+                if (impact !== 0) {
+                    if (impact > 0) {
+                        degatsText += `<span class="arme-impact-inline positive">+${impact}</span>`;
+                    } else {
+                        degatsText += `<span class="arme-impact-inline negative">${impact}</span>`;
+                    }
+                    tooltipParts.push(`Impact (FOR) : ${impact >= 0 ? '+' : ''}${impact}`);
                 }
-                tooltipParts.push(`Impact (FOR) : ${impact >= 0 ? '+' : ''}${impact}`);
+                // Ajouter le modificateur de morphotype (Borbybudy)
+                const morphMod = (typeof getMorphotypeDamageMod === 'function') ? getMorphotypeDamageMod() : 0;
+                if (morphMod !== 0) {
+                    degatsText += `<span class="arme-impact-inline ${morphMod > 0 ? 'positive' : 'negative'}">${morphMod > 0 ? '+' : ''}${morphMod}</span>`;
+                    tooltipParts.push(`Morphotype : ${morphMod > 0 ? '+' : ''}${morphMod}`);
+                }
             }
 
             degatsDisplay.innerHTML = degatsText;
@@ -2412,6 +2443,64 @@
             if (particularites) {
                 particularites.textContent = infos[race] || '';
             }
+
+            // Afficher/Masquer le sélecteur de morphotype pour Borbybudy
+            const morphContainer = document.getElementById('morphotype-container');
+            const morphSelect = document.getElementById('morphotype');
+            if (morphContainer && morphSelect) {
+                if (race === 'borbybudy') {
+                    morphContainer.style.display = '';
+                } else {
+                    // Masquer et réinitialiser si on quitte la race Borbybudy
+                    morphContainer.style.display = 'none';
+                    if (morphSelect.value !== '') morphSelect.value = '';
+                }
+            }
+
+            // Recalculer les dérivées et dégâts liés
+            if (typeof calculateDerived === 'function') calculateDerived();
+            if (typeof updateAllArmes === 'function') updateAllArmes();
+        }
+
+        // Lecture du morphotype courant
+        function getCurrentMorphotype() {
+            const sel = document.getElementById('morphotype');
+            return sel ? (sel.value || '') : '';
+        }
+
+        // Modificateur de dégâts CàC selon morphotype (léger:-1, massif:+1)
+        function getMorphotypeDamageMod() {
+            const race = (document.getElementById('race') && document.getElementById('race').value) || '';
+            if (race !== 'borbybudy') return 0;
+            const m = getCurrentMorphotype();
+            if (m === 'leger') return -1;
+            if (m === 'massif') return +1;
+            return 0;
+        }
+
+        // Delta d\'affichage pour Jetons Vitesse (+1/-1)
+        function getMorphotypeSpeedDelta() {
+            const race = (document.getElementById('race') && document.getElementById('race').value) || '';
+            if (race !== 'borbybudy') return 0;
+            const m = getCurrentMorphotype();
+            if (m === 'leger') return +1;
+            if (m === 'massif') return -1;
+            return 0;
+        }
+
+        // Delta d\'affichage pour Mouvement en mètres (+1/-1)
+        function getMorphotypeMovementDelta() {
+            const race = (document.getElementById('race') && document.getElementById('race').value) || '';
+            if (race !== 'borbybudy') return 0;
+            const m = getCurrentMorphotype();
+            if (m === 'leger') return +1;
+            if (m === 'massif') return -1;
+            return 0;
+        }
+
+        function onMorphotypeChanged() {
+            if (typeof calculateDerived === 'function') calculateDerived();
+            if (typeof updateAllArmes === 'function') updateAllArmes();
         }
 
 
