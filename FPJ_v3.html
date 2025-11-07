@@ -591,14 +591,16 @@
                         </div>
                         <div class="field">
                             <label for="arcane">Arcane Majeur Personnel</label>
-                            <input type="text" id="arcane" list="arcanes-list" placeholder="Commencez à  taper...">
-                            <datalist id="arcanes-list"></datalist>
+                            <select id="arcane">
+                                <option value="">-- Choisir --</option>
+                            </select>
+                            <div id="arcane-opposite" class="arcane-opposite" style="color:#555; font-size: 0.9em; margin-top: 4px; display:none;"></div>
                         </div>
                     </div>
                     <div class="row">
                         <div class="field">
                             <label for="particularites">Particularités raciales</label>
-                            <textarea id="particularites" placeholder="Décrivez les particularités spécifiques à  votre race..."></textarea>
+                            <div id="particularites" style="white-space: pre-wrap;"></div>
                         </div>
                     </div>
                 </div>
@@ -1008,7 +1010,7 @@
                 <div class="section-content">
                     <div class="info-box">
                         <strong>Dégâts par Rang :</strong> 0 (1D6) | 1 (1D6+1) | 2 (2D6) | 3 (2D6+2) | 4 (3D6) | 5 (3D6+3)<br>
-                        <strong>Impact actuel (Cà C uniquement) :</strong> <span id="impact-armes-display" style="font-weight: bold; color: #667eea;">0</span>
+                        <strong>Impact actuel (C à C uniquement) :</strong> <span id="impact-armes-display" style="font-weight: bold; color: #667eea;">0</span>
                     </div>
                     <table>
                         <thead>
@@ -1016,7 +1018,7 @@
                                 <th>Arme</th>
                                 <th>Type</th>
                                 <th>Rang Compétence</th>
-                                <th>Dégâts (avec Impact si Cà C)</th>
+                                <th>Dégâts (avec Impact si C à C)</th>
                                 <th>Notes</th>
                                 <th>Actions</th>
                             </tr>
@@ -1054,31 +1056,109 @@
     <script>
         // ==================== BASES DE DONNÉES ====================
 
-        // 22 Arcanes Majeurs
-        const arcanesMajeurs = [
-            "0 - La Folle",
-            "I - La Magicienne",
-            "II - La Grande Prêtresse",
-            "III - L'Impératrice",
-            "IV - L'Empereur",
-            "V - L'Hiérophante",
-            "VI - Les Amoureux",
-            "VII - Le Chariot",
-            "VIII - La Force",
-            "IX - L'Hermite",
-            "X - La Roue de Fortune",
-            "XI - La Justice",
-            "XII - La Pendue",
-            "XIII - La Mort",
-            "XIV - Tempérance",
-            "XV - La Diablesse",
-            "XVI - La Tour",
-            "XVII - L'Étoile",
-            "XVIII - La Lune",
-            "XIX - Le Soleil",
-            "XX - Le Jugement",
-            "XXI - Le Monde"
-        ];
+        // 22 Arcanes Majeurs (nouvelle structure)
+        const arcanesMajeurs = {
+          arcana: [
+            { id: 0, roman: "0", name: "La Folle" },
+            { id: 1, roman: "I", name: "La Magicienne" },
+            { id: 2, roman: "II", name: "La Grande Prêtresse" },
+            { id: 3, roman: "III", name: "L'Impératrice" },
+            { id: 4, roman: "IV", name: "L'Empereur" },
+            { id: 5, roman: "V", name: "L'Hiérophante" },
+            { id: 6, roman: "VI", name: "Les Amoureux" },
+            { id: 7, roman: "VII", name: "Le Chariot" },
+            { id: 8, roman: "VIII", name: "La Force" },
+            { id: 9, roman: "IX", name: "L'Hermite" },
+            { id: 10, roman: "X", name: "La Roue de Fortune" },
+            { id: 11, roman: "XI", name: "La Justice" },
+            { id: 12, roman: "XII", name: "La Pendue" },
+            { id: 13, roman: "XIII", name: "La Mort" },
+            { id: 14, roman: "XIV", name: "Tempérance" },
+            { id: 15, roman: "XV", name: "La Diablesse" },
+            { id: 16, roman: "XVI", name: "La Tour" },
+            { id: 17, roman: "XVII", name: "L'Étoile" },
+            { id: 18, roman: "XVIII", name: "La Lune" },
+            { id: 19, roman: "XIX", name: "Le Soleil" },
+            { id: 20, roman: "XX", name: "Le Jugement" },
+            { id: 21, roman: "XXI", name: "Le Monde" }
+          ],
+          opposites: [
+            [1, 2],
+            [3, 4],
+            [5, 16],
+            [6, 15],
+            [7, 12],
+            [8, 18],
+            [9, 19],
+            [10, 21],
+            [11, 0],
+            [13, 17],
+            [14, 20]
+          ]
+        };
+
+        // Maps et helpers pour les Arcanes
+        let arcaneIdToItem = {};
+        let arcaneLabelToId = {};
+        let arcaneOppositeMap = {};
+        function formatArcaneLabel(item) { return `${item.roman} - ${item.name}`; }
+        function buildArcaneMaps() {
+            arcaneIdToItem = {};
+            arcaneLabelToId = {};
+            arcaneOppositeMap = {};
+            try {
+                (arcanesMajeurs.arcana || []).forEach(item => {
+                    arcaneIdToItem[item.id] = item;
+                    arcaneLabelToId[formatArcaneLabel(item)] = item.id;
+                });
+                (arcanesMajeurs.opposites || []).forEach(pair => {
+                    if (Array.isArray(pair) && pair.length === 2) {
+                        arcaneOppositeMap[pair[0]] = pair[1];
+                        arcaneOppositeMap[pair[1]] = pair[0];
+                    }
+                });
+            } catch (e) {
+                console.warn('Erreur construction des maps arcanes:', e);
+            }
+        }
+        function getOppositeArcane(id) {
+            const oppId = arcaneOppositeMap[id];
+            return typeof oppId === 'number' ? arcaneIdToItem[oppId] : null;
+        }
+        function setArcaneById(id) {
+            const select = document.getElementById('arcane');
+            if (!select) return;
+            if (typeof arcaneIdToItem !== 'object' || !arcaneIdToItem[id]) {
+                select.value = '';
+                updateArcaneOppositeDisplay();
+                return;
+            }
+            select.value = String(id);
+            updateArcaneOppositeDisplay();
+        }
+        function getSelectedArcaneId() {
+            const select = document.getElementById('arcane');
+            if (!select) return null;
+            const v = select.value;
+            if (v === '' || v == null) return null;
+            const n = parseInt(v, 10);
+            return Number.isNaN(n) ? null : n;
+        }
+        function updateArcaneOppositeDisplay() {
+            const display = document.getElementById('arcane-opposite');
+            if (!display) return;
+            const id = getSelectedArcaneId();
+            if (typeof id === 'number') {
+                const opp = getOppositeArcane(id);
+                if (opp) {
+                    display.textContent = `Opposé: ${opp.roman} ${opp.name}`;
+                    display.style.display = '';
+                    return;
+                }
+            }
+            display.textContent = '';
+            display.style.display = 'none';
+        }
 
         // Base de données des dons
         const donsDatabase = {
@@ -1515,18 +1595,28 @@
 
         // Variables globales pour les dons actifs
         let donsActifs = [];
-        let capacitesActives = [];
+            let capacitesActives = [];
+            let donSeq = 0;
+            let armeSeq = 0;
 
         // ==================== INITIALISATION ====================
 
-        // Initialiser la datalist des arcanes majeurs
+        // Initialiser la liste déroulante des arcanes majeurs (nouvelle structure) et le listener d'opposé
         function initializeArcanes() {
-            const datalist = document.getElementById('arcanes-list');
-            arcanesMajeurs.forEach(arcane => {
-                const option = document.createElement('option');
-                option.value = arcane;
-                datalist.appendChild(option);
-            });
+            buildArcaneMaps();
+            const select = document.getElementById('arcane');
+            if (select) {
+                // Réinitialiser les options et ajouter le placeholder
+                select.innerHTML = '<option value="">-- Choisir --</option>';
+                (arcanesMajeurs.arcana || []).forEach(item => {
+                    const opt = document.createElement('option');
+                    opt.value = String(item.id);
+                    opt.textContent = formatArcaneLabel(item);
+                    select.appendChild(opt);
+                });
+                select.addEventListener('change', updateArcaneOppositeDisplay);
+            }
+            updateArcaneOppositeDisplay();
         }
 
         // ==================== CARACTÉRISTIQUES ====================
@@ -1813,7 +1903,7 @@
         function addDon() {
             const container = document.getElementById('dons-list');
             const count = donsActifs.length + 1;
-            const donId = 'don-' + Date.now();
+            const donId = 'don-' + (++donSeq);
 
             const div = document.createElement('div');
             div.className = 'don-select-container';
@@ -2241,7 +2331,7 @@
             const tooltipParts = [`Rang ${rang} : ${degatsBase}`];
 
 
-            // Ajouter l'Impact seulement pour les armes Cà C
+            // Ajouter l'Impact seulement pour les armes C à C
             if (type === 'cac' && impact !== 0) {
                 if (impact > 0) {
                     degatsText += `<span class="arme-impact-inline positive">+${impact}</span>`;
@@ -2256,9 +2346,10 @@
         }
 
         // Ajouter une arme
-        function addArme() {
+        // Peut être appelée sans argument (via le bouton) ou avec un objet { nom, type, notes } (via import)
+        function addArme(armeData) {
             const tbody = document.getElementById('armes-list');
-            const armeId = 'arme-' + Date.now();
+            const armeId = 'arme-' + Date.now() + '-' + Math.floor(Math.random()*1000);
             const row = tbody.insertRow();
             row.className = 'arme-row';
             row.id = armeId;
@@ -2267,7 +2358,7 @@
                 <td><input type="text" placeholder="Nom de l'arme"></td>
                 <td>
                     <select class="arme-type-select" onchange="updateArmeDegats('${armeId}')">
-                        <option value="cac">Cà C</option>
+                        <option value="cac">C à C</option>
                         <option value="distance">Distance</option>
                     </select>
                 </td>
@@ -2276,6 +2367,16 @@
                 <td><input type="text" placeholder="Notes"></td>
                 <td><button class="remove-arme-btn" onclick="removeArme('${armeId}')">Retirer</button></td>
             `;
+
+            // Renseigner les valeurs si fournies (import)
+            if (armeData && typeof armeData === 'object') {
+                const nomInput = row.querySelector('td:nth-child(1) input');
+                const typeSelect = row.querySelector('.arme-type-select');
+                const notesInput = row.querySelector('td:nth-child(5) input');
+                if (nomInput) nomInput.value = (armeData.nom || '').toString();
+                if (typeSelect) typeSelect.value = (armeData.type === 'distance' ? 'distance' : 'cac');
+                if (notesInput) notesInput.value = (armeData.notes || '').toString();
+            }
 
             // Initialiser l'affichage des dégâts
             updateArmeDegats(armeId);
@@ -2302,13 +2403,15 @@
 
             const infos = {
                 'humain': 'Polyvalence : 1/combat, défausser jusqu\'à  2 cartes pour en piocher autant.\nAdaptable : Début session, choisir 1 famille de compétences, ignorer 1 malus sur cette famille.',
-                'borbybudy': 'Morphotype (Léger ou Massif) : +1/-1 Jeton Vitesse, +1/-1m Mouvement, -1/+1 dégâts Cà C.\nInstincts : 1/scène, si Bâtons joué sur Survie, +5% (+10% total).',
+                'borbybudy': 'Morphotype (Léger ou Massif) : +1/-1 Jeton Vitesse, +1/-1m Mouvement, -1/+1 dégâts C à C.\nInstincts : 1/scène, si Bâtons joué sur Survie, +5% (+10% total).',
                 'mogwai': 'Bascule (1 carte + 1 Flux) : échanger 2 caractéristiques (FOR→INT, AGI→CHA, CON→VOL).\nAspect mogwaï : +5% charme/inoffensif. Aspect gremlin : +1 dégât si Épées, +5% Combat/intimidation.',
                 'blinker': 'Clignement : défausser 1 carte → téléport 3m (30m si Folle). Action rapide.\nVoracité : coup final → consommer sucré → +1 Flux.\nChaos : si Roue de Fortune, échanger 1 carte main avec défausse + piocher 1.',
                 'entaclute': 'Amphibie : +20% Athlétisme nage OU +10% Soins près d\'eau.\nRot de la Vase : 1/scène, test CHA → Sbire fuit / Ennemi -10% / Gardien -5%.\nMélancolie : perte Essence → pas de carte conservée fin combat.'
             };
             
-            particularites.value = infos[race] || '';
+            if (particularites) {
+                particularites.textContent = infos[race] || '';
+            }
         }
 
 
@@ -2419,8 +2522,12 @@
                 if (el.closest('.competence-row')) {
                     return;
                 }
+                // Ne pas sérialiser les champs des lignes d'Armes ici (structure dédiée plus bas)
+                if (el.closest('.arme-row')) {
+                    return;
+                }
 
-                let key = el.id || el.name || (el.closest('.arme-row') ? 'arme' : el.tagName.toLowerCase());
+                let key = el.id || el.name || el.tagName.toLowerCase();
                 if (result.hasOwnProperty(key)) {
                     counts[key] = (counts[key] || 1) + 1;
                     key = key + '_' + counts[key];
@@ -2494,6 +2601,73 @@
                 console.warn('Impossible de sérialiser les capacités:', e);
             }
 
+            // Capture des Dons sélectionnés (identifiants de donsDatabase)
+            try {
+                const donSelects = Array.from(document.querySelectorAll('#dons-list .don-select-container select'));
+                let selectedDons = donSelects
+                    .map(sel => sel && typeof sel.value === 'string' ? sel.value : '')
+                    .filter(v => v);
+
+                if ((!selectedDons || selectedDons.length === 0) && typeof donsActifs !== 'undefined' && Array.isArray(donsActifs) && donsActifs.length > 0) {
+                    selectedDons = [...donsActifs];
+                }
+
+                if (selectedDons && selectedDons.length > 0) {
+                    // Déduplication en conservant l'ordre et filtrage des clés valides
+                    const seen = new Set();
+                    const valid = selectedDons.filter(v => {
+                        if (!v || !donsDatabase[v]) return false;
+                        if (seen.has(v)) return false;
+                        seen.add(v);
+                        return true;
+                    });
+                    if (valid.length > 0) {
+                        result['__dons'] = valid;
+                    }
+                }
+            } catch (e) {
+                console.warn('Impossible de sérialiser les dons:', e);
+            }
+
+            // Normaliser la valeur d'arcane: sauver uniquement l'ID
+            try {
+                const arcId = getSelectedArcaneId();
+                if (typeof arcId === 'number') {
+                    result['arcane'] = arcId;
+                } else {
+                    // Si non reconnu, ne pas exporter de valeur incohérente
+                    if (Object.prototype.hasOwnProperty.call(result, 'arcane')) delete result['arcane'];
+                }
+            } catch (e) {
+                console.warn('Impossible de sérialiser l\'arcane:', e);
+            }
+
+            // Sérialiser les Armes sous forme de tableau structuré
+            try {
+                const rows = Array.from(document.querySelectorAll('#armes-list .arme-row'));
+                const armes = [];
+                rows.forEach(row => {
+                    const nomInput = row.querySelector('td:nth-child(1) input');
+                    const typeSelect = row.querySelector('.arme-type-select');
+                    const notesInput = row.querySelector('td:nth-child(5) input');
+                    const nom = (nomInput && nomInput.value) ? nomInput.value.trim() : '';
+                    const type = (typeSelect && typeSelect.value) ? typeSelect.value : 'cac';
+                    const notes = (notesInput && notesInput.value) ? notesInput.value.trim() : '';
+                    // Éviter d'ajouter une ligne totalement vide par défaut
+                    if (nom || notes || type !== 'cac') {
+                        armes.push({ nom, type, notes });
+                    }
+                });
+                if (armes.length > 0) {
+                    result['armes'] = armes;
+                } else {
+                    // Compat: s'assurer que d'anciens champs plats ne sont pas présents
+                    // (ils sont déjà exclus plus haut)
+                }
+            } catch (e) {
+                console.warn('Impossible de sérialiser les armes:', e);
+            }
+
             return result;
         }
         
@@ -2553,9 +2727,10 @@
                 elements.forEach((el) => {
                     // Ignorer tous les champs de la section Compétences ici (traités séparément)
                     if (el.closest('.competence-row')) return;
+                    // Ignorer les champs des lignes d'Armes (traités séparément)
+                    if (el.closest('.arme-row')) return;
 
-                    const inArmeRow = !!el.closest('.arme-row');
-                    const baseKey = el.id || el.name || (inArmeRow ? 'arme' : el.tagName.toLowerCase());
+                    const baseKey = el.id || el.name || el.tagName.toLowerCase();
 
                     let key;
                     if (!seen[baseKey]) {
@@ -2565,6 +2740,9 @@
                         seen[baseKey] += 1;
                         key = baseKey + '_' + seen[baseKey]; // 2e -> _2, etc.
                     }
+
+                    // Spécifique Arcane: si on a un ID (nombre) dans data.arcane, on ne l'applique pas directement ici
+                    if (baseKey === 'arcane') return;
 
                     if (!(key in data)) return; // rien à appliquer
                     const value = data[key];
@@ -2577,6 +2755,34 @@
                         el.value = value == null ? '' : value;
                     }
                 });
+
+                // Appliquer l'Arcane (ID numérique attendu; compatibilité avec ancien libellé)
+                try {
+                    buildArcaneMaps();
+                    const arcField = document.getElementById('arcane');
+                    if (arcField) {
+                        const v = data['arcane'];
+                        if (typeof v === 'number') {
+                            setArcaneById(v);
+                        } else if (typeof v === 'string' && v.trim()) {
+                            const s = v.trim();
+                            if (/^\d+$/.test(s)) {
+                                setArcaneById(parseInt(s, 10));
+                            } else if (Object.prototype.hasOwnProperty.call(arcaneLabelToId, s)) {
+                                setArcaneById(arcaneLabelToId[s]);
+                            } else {
+                                // libellé inconnu: effacer la sélection
+                                arcField.value = '';
+                                updateArcaneOppositeDisplay();
+                            }
+                        } else {
+                            arcField.value = '';
+                            updateArcaneOppositeDisplay();
+                        }
+                    }
+                } catch (e) {
+                    console.warn('Impossible d\'appliquer l\'arcane importé:', e);
+                }
 
                 // Appliquer les Compétences depuis data.competences et forcer le select sur la 1ère option
                 try {
@@ -2680,6 +2886,97 @@
                     }
                 } catch (e) {
                     console.warn('Avertissement durant la reconstruction des capacités:', e);
+                }
+
+                // Recréer la section "Dons" si des données structurées existent
+                try {
+                    const dons = data['__dons'];
+                    if (Array.isArray(dons)) {
+                        const list = document.getElementById('dons-list');
+                        if (list) list.innerHTML = '';
+                        if (typeof donsActifs !== 'undefined') donsActifs = [];
+
+                        const seenDons = new Set();
+                        dons.forEach((donKey) => {
+                            if (!donKey || seenDons.has(donKey)) return;
+                            if (!donsDatabase || !donsDatabase[donKey]) return; // don inconnu
+                            seenDons.add(donKey);
+
+                            if (typeof addDon === 'function') {
+                                addDon();
+                                // Sélectionner la dernière entrée ajoutée
+                                const containers = document.querySelectorAll('#dons-list .don-select-container');
+                                const last = containers[containers.length - 1];
+                                if (last) {
+                                    const sel = last.querySelector('select');
+                                    if (sel) sel.value = donKey;
+                                    if (typeof selectDon === 'function') selectDon(last.id, donKey);
+                                }
+                            }
+                        });
+                    }
+                } catch (e) {
+                    console.warn('Avertissement durant la reconstruction des dons:', e);
+                }
+
+                // Recréer la section "Armes" à partir d'un tableau structuré, avec compat rétro des anciennes clés "arme", "arme_2", ...
+                try {
+                    const armesListEl = document.getElementById('armes-list');
+                    if (armesListEl) {
+                        // Nettoyer la liste actuelle
+                        armesListEl.innerHTML = '';
+
+                        let armesArr = null;
+                        if (Array.isArray(data['armes'])) {
+                            armesArr = data['armes'];
+                        } else {
+                            // Compatibilité: reconstituer depuis les anciennes clés plates
+                            const legacyMap = {};
+                            let maxIdx = 0;
+                            Object.keys(data).forEach(k => {
+                                if (k === 'arme' || k.startsWith('arme_')) {
+                                    let idx = 1;
+                                    const m = k.match(/^arme_(\d+)$/);
+                                    if (m) idx = parseInt(m[1], 10);
+                                    legacyMap[idx] = data[k];
+                                    if (idx > maxIdx) maxIdx = idx;
+                                }
+                            });
+                            if (maxIdx > 0) {
+                                // Convertir en tableau ordonné
+                                const ordered = [];
+                                for (let i = 1; i <= maxIdx; i++) {
+                                    if (Object.prototype.hasOwnProperty.call(legacyMap, i)) {
+                                        ordered.push(legacyMap[i]);
+                                    }
+                                }
+                                // Grouper par 3 (nom, type, notes)
+                                armesArr = [];
+                                for (let i = 0; i < ordered.length; i += 3) {
+                                    const nom = (ordered[i] ?? '').toString();
+                                    const typeRaw = (ordered[i + 1] ?? '').toString();
+                                    const notes = (ordered[i + 2] ?? '').toString();
+                                    let type = (typeRaw === 'distance') ? 'distance' : 'cac';
+                                    // Si nom et notes vides et type par défaut, ignorer
+                                    if (nom || notes || type !== 'cac') {
+                                        armesArr.push({ nom, type, notes });
+                                    }
+                                }
+                            }
+                        }
+
+                        if (Array.isArray(armesArr) && armesArr.length > 0) {
+                            armesArr.forEach(a => {
+                                if (!a || typeof a !== 'object') return;
+                                const nom = (a.nom ?? '').toString();
+                                const type = (a.type === 'distance') ? 'distance' : 'cac';
+                                const notes = (a.notes ?? '').toString();
+                                addArme({ nom, type, notes });
+                            });
+                        }
+                    }
+                } catch (e) {
+                    console.warn('Avertissement durant la reconstruction des armes:', e);
                 }
 
                 // Rafraîchir les affichages / dérivées
