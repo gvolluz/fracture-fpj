@@ -2415,6 +2415,10 @@
                 if (capacitesContainer && el.closest('#capacites-list')) {
                     return;
                 }
+                // Ne pas sérialiser les champs des lignes de Compétences ici (on gère une structure dédiée)
+                if (el.closest('.competence-row')) {
+                    return;
+                }
 
                 let key = el.id || el.name || (el.closest('.arme-row') ? 'arme' : el.tagName.toLowerCase());
                 if (result.hasOwnProperty(key)) {
@@ -2433,6 +2437,36 @@
 
                 result[key] = value;
             });
+
+            // Compétences: sérialiser sous une propriété dédiée avec des clés camelCase issues du libellé, sans accents.
+            try {
+                const toKey = (label) => {
+                    const noAcc = (label || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+                    const words = noAcc
+                        .toLowerCase()
+                        .replace(/[^a-z0-9]+/g, ' ')
+                        .trim()
+                        .split(/\s+/);
+                    if (words.length === 0) return '';
+                    const [first, ...rest] = words;
+                    return first + rest.map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('');
+                };
+                const compRows = Array.from(document.querySelectorAll('.competence-row'));
+                if (compRows.length > 0) {
+                    const compData = {};
+                    compRows.forEach(row => {
+                        const labelCell = row.querySelector('td');
+                        const label = labelCell ? labelCell.textContent.trim() : '';
+                        const key = toKey(label);
+                        const input = row.querySelector('input[type="number"]');
+                        const rang = parseInt(input && input.value) || 0;
+                        if (key) compData[key] = rang;
+                    });
+                    result['competences'] = compData;
+                }
+            } catch (e) {
+                console.warn('Impossible de sérialiser les compétences:', e);
+            }
 
             // Capture structurée de la section "Voie et Capacités" avec identifiants
             try {
@@ -2517,6 +2551,9 @@
                 const elements = Array.from(document.querySelectorAll('input, select, textarea'));
 
                 elements.forEach((el) => {
+                    // Ignorer tous les champs de la section Compétences ici (traités séparément)
+                    if (el.closest('.competence-row')) return;
+
                     const inArmeRow = !!el.closest('.arme-row');
                     const baseKey = el.id || el.name || (inArmeRow ? 'arme' : el.tagName.toLowerCase());
 
@@ -2540,6 +2577,47 @@
                         el.value = value == null ? '' : value;
                     }
                 });
+
+                // Appliquer les Compétences depuis data.competences et forcer le select sur la 1ère option
+                try {
+                    const compData = data['competences'];
+                    const toKey = (label) => {
+                        const noAcc = (label || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+                        const words = noAcc
+                            .toLowerCase()
+                            .replace(/[^a-z0-9]+/g, ' ')
+                            .trim()
+                            .split(/\s+/);
+                        if (words.length === 0) return '';
+                        const [first, ...rest] = words;
+                        return first + rest.map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('');
+                    };
+
+                    const rows = Array.from(document.querySelectorAll('.competence-row'));
+                    rows.forEach(row => {
+                        const labelCell = row.querySelector('td');
+                        const label = labelCell ? labelCell.textContent.trim() : '';
+                        const key = toKey(label);
+                        const input = row.querySelector('input[type="number"]');
+                        const select = row.querySelector('select');
+
+                        // Régler le rang si présent
+                        if (compData && key && Object.prototype.hasOwnProperty.call(compData, key) && input) {
+                            const v = parseInt(compData[key]);
+                            input.value = isNaN(v) ? (input.value || 0) : v;
+                        }
+
+                        // Forcer le select sur la 1ère option non désactivée
+                        if (select && select.options && select.options.length > 0) {
+                            for (let i = 0; i < select.options.length; i++) {
+                                const opt = select.options[i];
+                                if (!opt.disabled) { select.value = opt.value; break; }
+                            }
+                        }
+                    });
+                } catch (e) {
+                    console.warn('Impossible d\'appliquer les compétences importées:', e);
+                }
 
                 // Recréer la section "Voie et Capacités" si des données structurées existent
                 try {
