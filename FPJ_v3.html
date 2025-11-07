@@ -1,0 +1,2506 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feuille de Personnage - Fracture v0.16</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            font-size: 1.3em;
+            font-weight: bold;
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-header:hover {
+            background: linear-gradient(135deg, #5568d3 0%, #6a3f8f 100%);
+        }
+
+        .section-content {
+            padding: 20px;
+            background: #f9f9f9;
+        }
+
+        .row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .field {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .field label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #555;
+            font-size: 0.9em;
+        }
+
+        .field input, .field select, .field textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .field input:focus, .field select:focus, .field textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .field input[readonly] {
+            background: #e9ecef;
+            cursor: not-allowed;
+        }
+
+        .caracteristiques {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+        }
+
+        .carac-box {
+            background: white;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .carac-box:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .carac-box label {
+            display: block;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+        }
+
+        .carac-box input {
+            width: 50px;
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            border: none;
+            border-bottom: 2px solid #667eea;
+            background: transparent;
+        }
+
+        .carac-value {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 5px;
+        }
+
+        .carac-multiplied {
+            font-size: 1.2em;
+            color: #764ba2;
+            font-weight: bold;
+            padding: 5px 10px;
+            background: #f3e5f5;
+            border-radius: 5px;
+        }
+
+        .carac-validation {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .carac-validation.valid {
+            background: #c8e6c9;
+            color: #2e7d32;
+            border: 2px solid #4caf50;
+        }
+
+        .carac-validation.invalid {
+            background: #ffcdd2;
+            color: #c62828;
+            border: 2px solid #f44336;
+        }
+
+        .competences-validation {
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .competences-validation.valid {
+            background: #c8e6c9;
+            color: #2e7d32;
+            border: 2px solid #4caf50;
+        }
+
+        .competences-validation.invalid {
+            background: #ffcdd2;
+            color: #c62828;
+            border: 2px solid #f44336;
+        }
+
+        .competences-validation.warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 2px solid #ffc107;
+        }
+
+        .competence-row input[type="number"] {
+            width: 60px;
+            text-align: center;
+        }
+
+        .competence-row input[type="number"]:invalid {
+            border-color: #f44336;
+        }
+
+        .ressources {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .ressource-box {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .ressource-box h3 {
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .ressource-values {
+            display: flex;
+            align-items: baseline;
+            gap: 5px;
+        }
+
+        .ressource-values input {
+            background: white;
+            color: #333;
+            border: none;
+            padding: 8px;
+            border-radius: 5px;
+            font-size: 1.3em;
+            font-weight: bold;
+            width: 60px;
+            text-align: center;
+        }
+
+        .ressource-values .separator {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        table th, table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        table th {
+            background: #667eea;
+            color: white;
+            font-weight: bold;
+        }
+
+        table tr:hover {
+            background: #f0f0f0;
+        }
+
+        .competence-row input[type="number"] {
+            width: 60px;
+            text-align: center;
+        }
+
+        .competence-row .modificateur {
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .add-button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            margin-top: 10px;
+            transition: background 0.3s;
+        }
+
+        .add-button:hover {
+            background: #5568d3;
+        }
+
+        .toggle-icon {
+            transition: transform 0.3s;
+        }
+
+        .collapsed .toggle-icon {
+            transform: rotate(-90deg);
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .voie-capacites {
+            margin-top: 15px;
+        }
+
+        .capacite-item {
+            background: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+        }
+
+        .capacite-item h4 {
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+
+        .capacite-item .cout {
+            font-style: italic;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .don-card {
+            background: white;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            position: relative;
+        }
+
+        .don-card h4 {
+            color: #667eea;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .don-card .prerequis {
+            font-style: italic;
+            color: #999;
+            font-size: 0.85em;
+            margin-bottom: 8px;
+        }
+
+        .don-card .effets {
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .don-card .remove-btn {
+            background: #f44336;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.85em;
+        }
+
+        .don-card .remove-btn:hover {
+            background: #d32f2f;
+        }
+
+        .don-card.applied {
+            border-left-color: #4caf50;
+            background: #f1f8e9;
+        }
+
+        .don-card.applied::before {
+            content: "⚒ Modificateurs appliqués";
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #4caf50;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 0.75em;
+            font-weight: bold;
+        }
+
+        .don-select-container {
+            margin-bottom: 20px;
+        }
+
+        .don-select-container select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #667eea;
+            border-radius: 5px;
+            font-size: 1em;
+            background: white;
+        }
+
+        .arme-degats-display {
+            display: inline-flex;
+            align-items: center;
+            gap: 0;
+            font-weight: bold;
+            font-size: 1.1em;
+            color: #667eea;
+        }
+
+        .arme-degats-base {
+            color: #667eea;
+        }
+
+        .arme-impact-inline {
+            color: #666;
+        }
+
+        .arme-impact-inline.positive {
+            color: #2e7d32;
+        }
+
+        .arme-impact-inline.negative {
+            color: #c62828;
+        }
+
+        .arme-rang-display {
+            font-weight: bold;
+            color: #764ba2;
+        }
+
+        .arme-impact-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .arme-impact-badge.positive {
+            background: #c8e6c9;
+            color: #2e7d32;
+        }
+
+        .arme-impact-badge.negative {
+            background: #ffcdd2;
+            color: #c62828;
+        }
+
+        .arme-row td {
+            vertical-align: middle;
+        }
+
+        .arme-row select {
+            padding: 6px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .arme-row input[type="text"] {
+            padding: 6px;
+        }
+
+        .arme-row .remove-arme-btn {
+            background: #f44336;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.85em;
+        }
+
+        .arme-row .remove-arme-btn:hover {
+            background: #d32f2f;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .container {
+                box-shadow: none;
+            }
+            
+            .section-header {
+                cursor: default;
+            }
+            
+            .toggle-icon {
+                display: none;
+            }
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+
+        .info-box strong {
+            color: #1976d2;
+        }
+
+        /* Menu sous l'en-tête */
+        .menu-bar {
+            background: #f5f7ff;
+            border-bottom: 2px solid #e0e0e0;
+            padding: 12px 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .menu-bar .add-button {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎴 Feuille de Personnage</h1>
+            <p>Fracture - Système de jeu v0.16</p>
+        </div>
+
+        <div class="menu-bar">
+            <button class="add-button" onclick="exportCharacterJson()" aria-label="Exporter les données">Exporter</button>
+            <button class="add-button" onclick="triggerImport()" aria-label="Importer des données JSON">Importer</button>
+            <input type="file" id="import-file" accept="application/json" style="display:none" onchange="onImportFileChosen(event)">
+        </div>
+
+        <div class="content">
+            <!-- SECTION IDENTITÉ -->
+            <div class="section">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <span>Identité</span>
+                    <span class="toggle-icon">▼</span>
+                </div>
+                <div class="section-content">
+                    <div class="row">
+                        <div class="field">
+                            <label for="nom">Nom du personnage</label>
+                            <input type="text" id="nom" placeholder="Ex: Sinchi">
+                        </div>
+                        <div class="field">
+                            <label for="race">Race</label>
+                            <select id="race" onchange="updateRaceInfo()">
+                                <option value="">-- Choisir --</option>
+                                <option value="humain">Humain</option>
+                                <option value="borbybudy">Borbybudy</option>
+                                <option value="mogwai">Mogwaï</option>
+                                <option value="blinker">Blinker</option>
+                                <option value="entaclute">Entaclute</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label for="palier">Palier</label>
+                            <input type="number" id="palier" value="1" min="1" max="9" onchange="calculateDerived(); validateCompetences();">
+                        </div>
+                        <div class="field">
+                            <label for="arcane">Arcane Majeur Personnel</label>
+                            <input type="text" id="arcane" list="arcanes-list" placeholder="Commencez à  taper...">
+                            <datalist id="arcanes-list"></datalist>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="field">
+                            <label for="particularites">Particularités raciales</label>
+                            <textarea id="particularites" placeholder="Décrivez les particularités spécifiques à  votre race..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION CARACTÉRISTIQUES -->
+            <div class="section">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <span>Caractéristiques</span>
+                    <span class="toggle-icon">▼</span>
+                </div>
+                <div class="section-content">
+                    <div class="info-box">
+                        <strong>Création :</strong> Répartir 70 points (min 3, max 18), puis multiplier par 5.
+                    </div>
+                    <div id="carac-validation" class="carac-validation invalid">
+                        Total : <span id="carac-total">70</span> / 70 points
+                    </div>
+                    <div class="caracteristiques">
+                        <div class="carac-box">
+                            <label>FOR</label>
+                            <div class="carac-value">
+                                <input type="number" id="for-base" min="3" max="18" value="10" oninput="updateCaracteristique('for')">
+                                <span>→</span>
+                                <span class="carac-multiplied" id="for">50</span>
+                            </div>
+                        </div>
+                        <div class="carac-box">
+                            <label>AGI</label>
+                            <div class="carac-value">
+                                <input type="number" id="agi-base" min="3" max="18" value="10" oninput="updateCaracteristique('agi')">
+                                <span>→</span>
+                                <span class="carac-multiplied" id="agi">50</span>
+                            </div>
+                        </div>
+                        <div class="carac-box">
+                            <label>CON</label>
+                            <div class="carac-value">
+                                <input type="number" id="con-base" min="3" max="18" value="10" oninput="updateCaracteristique('con')">
+                                <span>→</span>
+                                <span class="carac-multiplied" id="con">50</span>
+                            </div>
+                        </div>
+                        <div class="carac-box">
+                            <label>PER</label>
+                            <div class="carac-value">
+                                <input type="number" id="per-base" min="3" max="18" value="10" oninput="updateCaracteristique('per')">
+                                <span>→</span>
+                                <span class="carac-multiplied" id="per">50</span>
+                            </div>
+                        </div>
+                        <div class="carac-box">
+                            <label>INT</label>
+                            <div class="carac-value">
+                                <input type="number" id="int-base" min="3" max="18" value="10" oninput="updateCaracteristique('int')">
+                                <span>→</span>
+                                <span class="carac-multiplied" id="int">50</span>
+                            </div>
+                        </div>
+                        <div class="carac-box">
+                            <label>VOL</label>
+                            <div class="carac-value">
+                                <input type="number" id="vol-base" min="3" max="18" value="10" oninput="updateCaracteristique('vol')">
+                                <span>→</span>
+                                <span class="carac-multiplied" id="vol">50</span>
+                            </div>
+                        </div>
+                        <div class="carac-box">
+                            <label>CHA</label>
+                            <div class="carac-value">
+                                <input type="number" id="cha-base" min="3" max="18" value="10" oninput="updateCaracteristique('cha')">
+                                <span>→</span>
+                                <span class="carac-multiplied" id="cha">50</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION RESSOURCES -->
+            <div class="section">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <span>Ressources et Valeurs Dérivées</span>
+                    <span class="toggle-icon">▼</span>
+                </div>
+                <div class="section-content">
+                    <div class="ressources">
+                        <div class="ressource-box">
+                            <h3>Ancrage</h3>
+                            <div class="ressource-values">
+                                <input type="number" id="ancrage-actuel" value="0">
+                                <span class="separator">/</span>
+                                <input type="number" id="ancrage-max" value="0" readonly>
+                            </div>
+                            <small>Agonisant: <span id="ancrage-agonisant">0</span></small>
+                        </div>
+                        <div class="ressource-box">
+                            <h3>Essence</h3>
+                            <div class="ressource-values">
+                                <input type="number" id="essence-actuel" value="0">
+                                <span class="separator">/</span>
+                                <input type="number" id="essence-max" value="0" readonly>
+                            </div>
+                        </div>
+                        <div class="ressource-box">
+                            <h3>Flux</h3>
+                            <div class="ressource-values">
+                                <input type="number" id="flux-actuel" value="0">
+                            </div>
+                            <small>Initial: <span id="flux-initial">1</span></small>
+                        </div>
+                        <div class="ressource-box">
+                            <h3>Combat</h3>
+                            <div style="margin-top: 10px;">
+                                <div><strong>Impact:</strong> <span id="impact">0</span></div>
+                                <div><strong>Mouvement:</strong> <span id="mouvement">5m</span></div>
+                                <div><strong>Jetons Vitesse:</strong> <span id="jetons-vitesse">1</span></div>
+                                <div><strong>Cartes (fin combat):</strong> <span id="cartes-fin">2</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION COMPÉTENCES -->
+            <div class="section">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <span>Compétences</span>
+                    <span class="toggle-icon">▼</span>
+                </div>
+                <div class="section-content">
+                    <div class="info-box">
+                        <strong>Rangs :</strong> 0 (-30%) | 1 (-10%) | 2 (+10%) | 3 (+20%) | 4 (+30%) | 5 (+40%)<br>
+                        <strong>Création :</strong> 15 rangs à  répartir, max Rang 3 (Expert)
+                    </div>
+                    <div id="competences-validation" class="competences-validation invalid">
+                        Total : <span id="competences-total">0</span> / 15 rangs - Reste 15 rangs à  répartir
+                    </div>
+
+                    <h3 style="margin-top: 20px; color: #667eea;">Survie & Exploration</h3>
+                    <table id="competences-survie">
+                        <thead>
+                            <tr>
+                                <th>Compétence</th>
+                                <th>Rang</th>
+                                <th>Modificateur</th>
+                                <th>Caractéristique</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="competence-row" data-comp="athletisme">
+                                <td>Athlétisme</td>
+                                <td><input type="number" min="0" max="5" value="0" onchange="updateCompetence(this)"></td>
+                                <td class="modificateur">-30%</td>
+                                <td>
+                                    <select onchange="updateCompetence(this)"></select>
+                                </td>
+                                <td class="total">20%</td>
+                            </tr>
+                            <tr class="competence-row" data-comp="discretion">
+                                <td>Discrétion</td>
+                                <td><input type="number" min="0" max="5" value="0" onchange="updateCompetence(this)"></td>
+                                <td class="modificateur">-30%</td>
+                                <td>
+                                    <select onchange="updateCompetence(this)"></select>
+                                </td>
+                                <td class="total">20%</td>
+                            </tr>
+                            <tr class="competence-row" data-comp="soins">
+                                <td>Soins</td>
+                                <td><input type="number" min="0" max="5" value="0" onchange="updateCompetence(this)"></td>
+                                <td class="modificateur">-30%</td>
+                                <td>
+                                    <select onchange="updateCompetence(this)"></select>
+                                </td>
+                                <td class="total">20%</td>
+                            </tr>
+                            <tr class="competence-row" data-comp="survie">
+                                <td>Survie</td>
+                                <td><input type="number" min="0" max="5" value="0" onchange="updateCompetence(this)"></td>
+                                <td class="modificateur">-30%</td>
+                                <td>
+                                    <select onchange="updateCompetence(this)"></select>
+                                </td>
+                                <td class="total">20%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h3 style="margin-top: 20px; color: #667eea;">Combat</h3>
+                    <table id="competences-combat">
+                        <thead>
+                            <tr>
+                                <th>Compétence</th>
+                                <th>Rang</th>
+                                <th>Modificateur</th>
+                                <th>Caractéristique</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="competence-row" data-comp="combat_rapproche">
+                                <td>Combat rapproché</td>
+                                <td><input type="number" min="0" max="5" value="0" onchange="updateCompetence(this)"></td>
+                                <td class="modificateur">-30%</td>
+                                <td>
+                                    <select onchange="updateCompetence(this)"></select>
+                                </td>
+                                <td class="total">20%</td>
+                            </tr>
+                            <tr class="competence-row" data-comp="combat_distance">
+                                <td>Combat à  distance</td>
+                                <td><input type="number" min="0" max="5" value="0" onchange="updateCompetence(this)"></td>
+                                <td class="modificateur">-30%</td>
+                                <td>
+                                    <select onchange="updateCompetence(this)"></select>
+                                </td>
+                                <td class="total">20%</td>
+                            </tr>
+                            <tr class="competence-row" data-comp="defense">
+                                <td>Défense</td>
+                                <td><input type="number" min="0" max="5" value="0" onchange="updateCompetence(this)"></td>
+                                <td class="modificateur">-30%</td>
+                                <td>
+                                    <select onchange="updateCompetence(this)"></select>
+                                </td>
+                                <td class="total">20%</td>
+                            </tr>
+                            <tr class="competence-row" data-comp="manoeuvre">
+                                <td>Manœuvre acrobatique</td>
+                                <td><input type="number" min="0" max="5" value="0" onchange="updateCompetence(this)"></td>
+                                <td class="modificateur">-30%</td>
+                                <td>
+                                    <select onchange="updateCompetence(this)"></select>
+                                </td>
+                                <td class="total">20%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h3 style="margin-top: 20px; color: #667eea;">Savoirs & Techniques</h3>
+                    <table id="competences-savoirs">
+                        <thead>
+                            <tr>
+                                <th>Compétence</th>
+                                <th>Rang</th>
+                                <th>Modificateur</th>
+                                <th>Caractéristique</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="competence-row" data-comp="culture">
+                                <td>Culture</td>
+                                <td><input type="number" min="0" max="5" value="0" onchange="updateCompetence(this)"></td>
+                                <td class="modificateur">-30%</td>
+                                <td>
+                                    <select onchange="updateCompetence(this)"></select>
+                                </td>
+                                <td class="total">20%</td>
+                            </tr>
+                            <tr class="competence-row" data-comp="deguisement">
+                                <td>Déguisement</td>
+                                <td><input type="number" min="0" max="5" value="0" onchange="updateCompetence(this)"></td>
+                                <td class="modificateur">-30%</td>
+                                <td>
+                                    <select onchange="updateCompetence(this)"></select>
+                                </td>
+                                <td class="total">20%</td>
+                            </tr>
+                            <tr class="competence-row" data-comp="occultisme">
+                                <td>Occultisme</td>
+                                <td><input type="number" min="0" max="5" value="0" onchange="updateCompetence(this)"></td>
+                                <td class="modificateur">-30%</td>
+                                <td>
+                                    <select onchange="updateCompetence(this)"></select>
+                                </td>
+                                <td class="total">20%</td>
+                            </tr>
+                            <tr class="competence-row" data-comp="sciences">
+                                <td>Sciences et Techniques</td>
+                                <td><input type="number" min="0" max="5" value="0" onchange="updateCompetence(this)"></td>
+                                <td class="modificateur">-30%</td>
+                                <td>
+                                    <select onchange="updateCompetence(this)"></select>
+                                </td>
+                                <td class="total">20%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h3 style="margin-top: 20px; color: #667eea;">Influence & Social</h3>
+                    <table id="competences-social">
+                        <thead>
+                            <tr>
+                                <th>Compétence</th>
+                                <th>Rang</th>
+                                <th>Modificateur</th>
+                                <th>Caractéristique</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="competence-row" data-comp="etiquette">
+                                <td>Étiquette</td>
+                                <td><input type="number" min="0" max="5" value="0" onchange="updateCompetence(this)"></td>
+                                <td class="modificateur">-30%</td>
+                                <td>
+                                    <select onchange="updateCompetence(this)"></select>
+                                </td>
+                                <td class="total">20%</td>
+                            </tr>
+                            <tr class="competence-row" data-comp="psychologie">
+                                <td>Psychologie</td>
+                                <td><input type="number" min="0" max="5" value="0" onchange="updateCompetence(this)"></td>
+                                <td class="modificateur">-30%</td>
+                                <td>
+                                    <select onchange="updateCompetence(this)"></select>
+                                </td>
+                                <td class="total">20%</td>
+                            </tr>
+                            <tr class="competence-row" data-comp="representation">
+                                <td>Représentation</td>
+                                <td><input type="number" min="0" max="5" value="0" onchange="updateCompetence(this)"></td>
+                                <td class="modificateur">-30%</td>
+                                <td>
+                                    <select onchange="updateCompetence(this)"></select>
+                                </td>
+                                <td class="total">20%</td>
+                            </tr>
+                            <tr class="competence-row" data-comp="tchatche">
+                                <td>Tchatche</td>
+                                <td><input type="number" min="0" max="5" value="0" onchange="updateCompetence(this)"></td>
+                                <td class="modificateur">-30%</td>
+                                <td>
+                                    <select onchange="updateCompetence(this)"></select>
+                                </td>
+                                <td class="total">20%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- SECTION DONS -->
+            <div class="section">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <span>Dons</span>
+                    <span class="toggle-icon">▼</span>
+                </div>
+                <div class="section-content">
+                    <div class="info-box">
+                        <strong>Création :</strong> 1 don gratuit (respecter les prérequis)<br>
+                        Les modificateurs applicables sont automatiquement appliqués
+                    </div>
+                    <div id="dons-list"></div>
+                    <button class="add-button" onclick="addDon()">+ Ajouter un don</button>
+                </div>
+            </div>
+
+            <!-- SECTION VOIE -->
+            <div class="section">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <span>Voie et Capacités</span>
+                    <span class="toggle-icon">▼</span>
+                </div>
+                <div class="section-content">
+                    <div class="row">
+                        <div class="field">
+                            <label for="voie">Voie</label>
+                            <select id="voie" onchange="updateVoieCapacites()">
+                                <option value="">-- Choisir --</option>
+                                <option value="mars">Mars (Combat)</option>
+                                <option value="jupiter">Jupiter (Soutien)</option>
+                                <option value="mercure">Mercure (Magie)</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label for="sentier">Sentier (à  partir du Degré 3)</label>
+                            <select id="sentier" onchange="updateVoieCapacites()">
+                                <option value="">-- Non choisi --</option>
+                                <option value="A">Sentier A</option>
+                                <option value="B">Sentier B</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="voie-capacites">
+                        <h3 style="color: #667eea; margin-bottom: 15px;">Capacités acquises</h3>
+                        <div class="info-box">
+                            <strong>Degré 1 :</strong> Gratuit à  la création<br>
+                            <strong>Degrés suivants :</strong> Progression par palier (option C)
+                        </div>
+                        <div id="capacites-list"></div>
+                        <button class="add-button" onclick="addCapacite()">+ Ajouter une capacité</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION ARMES -->
+            <div class="section">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <span>Armes et Équipement</span>
+                    <span class="toggle-icon">▼</span>
+                </div>
+                <div class="section-content">
+                    <div class="info-box">
+                        <strong>Dégâts par Rang :</strong> 0 (1D6) | 1 (1D6+1) | 2 (2D6) | 3 (2D6+2) | 4 (3D6) | 5 (3D6+3)<br>
+                        <strong>Impact actuel (Cà C uniquement) :</strong> <span id="impact-armes-display" style="font-weight: bold; color: #667eea;">0</span>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Arme</th>
+                                <th>Type</th>
+                                <th>Rang Compétence</th>
+                                <th>Dégâts (avec Impact si Cà C)</th>
+                                <th>Notes</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="armes-list">
+                        </tbody>
+                    </table>
+                    <button class="add-button" onclick="addArme()">+ Ajouter une arme</button>
+
+                    <h3 style="margin-top: 30px; color: #667eea;">Inventaire</h3>
+                    <textarea id="inventaire" placeholder="Listez votre équipement, objets importants, richesses..."></textarea>
+                </div>
+            </div>
+
+            <!-- SECTION NOTES -->
+            <div class="section">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <span>Background et Notes</span>
+                    <span class="toggle-icon">▼</span>
+                </div>
+                <div class="section-content">
+                    <div class="field">
+                        <label>Background</label>
+                        <textarea id="background" placeholder="Histoire, motivations, liens..."></textarea>
+                    </div>
+                    <div class="field" style="margin-top: 20px;">
+                        <label>Notes de session</label>
+                        <textarea id="notes" placeholder="Événements marquants, objectifs, questions en suspens..."></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== BASES DE DONNÉES ====================
+
+        // 22 Arcanes Majeurs
+        const arcanesMajeurs = [
+            "0 - La Folle",
+            "I - La Magicienne",
+            "II - La Grande Prêtresse",
+            "III - L'Impératrice",
+            "IV - L'Empereur",
+            "V - L'Hiérophante",
+            "VI - Les Amoureux",
+            "VII - Le Chariot",
+            "VIII - La Force",
+            "IX - L'Hermite",
+            "X - La Roue de Fortune",
+            "XI - La Justice",
+            "XII - La Pendue",
+            "XIII - La Mort",
+            "XIV - Tempérance",
+            "XV - La Diablesse",
+            "XVI - La Tour",
+            "XVII - L'Étoile",
+            "XVIII - La Lune",
+            "XIX - Le Soleil",
+            "XX - Le Jugement",
+            "XXI - Le Monde"
+        ];
+
+        // Base de données des dons
+        const donsDatabase = {
+            'affinite_voie': {
+                nom: 'Affinité de Voie',
+                prerequis: 'VOL 30 et INT 30',
+                effets: 'Coûte âˆ’1 Flux sur tous les coûts d\'activation des Capacités de sa Voie (minimum 1 Flux). Représente une facilité naturelle exceptionnelle avec sa discipline.',
+                aplicable: true,
+                checkPrerequisFunction: function(caracs) {
+                    return caracs.vol >= 30 && caracs.int >= 30;
+                }
+            },
+            'ambidextre': {
+                nom: 'Ambidextre',
+                prerequis: 'AGI 50',
+                effets: 'Sait tout faire de ses deux mains et n\'est donc pas impacté par des effets qui affecteraient sa main directrice.',
+                aplicable: false,
+                checkPrerequisFunction: function(caracs) {
+                    return caracs.agi >= 50;
+                }
+            },
+            'briseur': {
+                nom: 'Briseur',
+                prerequis: 'FOR 60',
+                effets: '+10 dégâts contre objets/structures ; +20% aux tests pour forcer, enfoncer, soulever, défoncer. En combat, 1/scène, peut imposer Â« Entravé Â» sur une cible touchée.',
+                aplicable: false,
+                checkPrerequisFunction: function(caracs) {
+                    return caracs.for >= 60;
+                }
+            },
+            'charisme_magnetique': {
+                nom: 'Charisme magnétique',
+                prerequis: 'CHA 50',
+                effets: 'Ne passe jamais inaperçu et brille en toute société comme un phare auprès duquel les autres individus viennent se brûler comme des papillons de nuit. +10% aux jets d\'influence contre des foules ou pour la première impression face à  un PNJ ; durant une longue scène, peut retirer un jet de CHA en cas d\'échec.',
+                aplicable: false,
+                checkPrerequisFunction: function(caracs) {
+                    return caracs.cha >= 50;
+                }
+            },
+            'contre_sort': {
+                nom: 'Contre sort',
+                prerequis: 'INT 60',
+                effets: 'Une fois par Combat, peut contrer en réaction l\'activation d\'une Capacité en dépensant 2 cartes et 1 Flux. En dépensant au moins 1 Majeur, retourne l\'effet contre son lanceur. En ne dépensant que des Mineurs, interrompt la Capacité.',
+                aplicable: false,
+                checkPrerequisFunction: function(caracs) {
+                    return caracs.int >= 60;
+                }
+            },
+            'discretion_fantome': {
+                nom: 'Discrétion fantôme',
+                prerequis: 'AGI 50 et PER 50',
+                effets: 'Peut se fondre dans l\'environnement à  moins d\'être en pleine lumière. +20% aux jets de Discrétion dans la pénombre, la foule, le brouillard etc., sinon +10%.',
+                aplicable: false,
+                checkPrerequisFunction: function(caracs) {
+                    return caracs.agi >= 50 && caracs.per >= 50;
+                }
+            },
+            'empathie_animale': {
+                nom: 'Empathie animale',
+                prerequis: 'PER 50',
+                effets: 'Sait apaiser, guider, comprendre et presque parler à  un animal, dressé ou non. Peut utiliser Tchatche sur les animaux et obtient un +20% pour apaiser ou guider l\'animal.',
+                aplicable: false,
+                checkPrerequisFunction: function(caracs) {
+                    return caracs.per >= 50;
+                }
+            },
+            'feinteur': {
+                nom: 'Feinteur',
+                prerequis: 'AGI 50, Combat rapproché Rang 1',
+                effets: 'Quand tu annonces une attaque de mêlée, tu peux dépenser 1 carte supplémentaire : si l\'attaque réussit, la cible subit âˆ’10% à  sa prochaine Défense contre toi ce Tour. Paire jouée : le malus passe à  âˆ’20%.',
+                aplicable: false,
+                checkPrerequisFunction: function(caracs) {
+                    return caracs.agi >= 50;
+                }
+            },
+            'fulgurance': {
+                nom: 'Fulgurance',
+                prerequis: 'AGI 60',
+                effets: 'Si tu as la Folle en main, tu peux la jouer pour interrompre sans subir la perte de 1 Essence.',
+                aplicable: false,
+                checkPrerequisFunction: function(caracs) {
+                    return caracs.agi >= 60;
+                }
+            },
+            'incassable': {
+                nom: 'Incassable',
+                prerequis: 'CON 50',
+                effets: 'Récupère +1D6 lors d\'un repos court ou +2D6 lors d\'un repos long.',
+                aplicable: false,
+                checkPrerequisFunction: function(caracs) {
+                    return caracs.con >= 50;
+                }
+            },
+            'lien_arcane': {
+                nom: 'Lien d\'Arcane',
+                prerequis: 'Aucun',
+                effets: 'Quand tu pioches ton Arcane Majeur, au lieu de son effet normal tu peux choisir : a) +2 Flux immédiats, ou b) ignorer 1 coût en cartes de ta prochaine action ce Tour (min 1). Si tu pioches l\'opposé, tu peux dépenser 1 Flux pour en atténuer le malus de moitié.',
+                aplicable: false,
+                checkPrerequisFunction: function(caracs) {
+                    return true;
+                }
+            },
+            'main_sure': {
+                nom: 'Main sûre',
+                prerequis: 'AGI 50 et PER 50',
+                effets: 'Lorsque tu tires un 100 sur un test hors combat, relance une fois. Une fois par combat, tu peux relancer un jet de Défense raté et garder le meilleur.',
+                aplicable: false,
+                checkPrerequisFunction: function(caracs) {
+                    return caracs.agi >= 50 && caracs.per >= 50;
+                }
+            },
+            'nyctalope': {
+                nom: 'Nyctalope',
+                prerequis: 'PER 20',
+                effets: 'Voit dans le noir comme en plein jour, ou presque, si une minime source de lumière existe.',
+                aplicable: false,
+                checkPrerequisFunction: function(caracs) {
+                    return caracs.per >= 20;
+                }
+            },
+            'polyglotte': {
+                nom: 'Polyglotte',
+                prerequis: 'INT 50',
+                effets: 'Communique bien avec juste les mains si nécessaire, mais a un talent inné pour comprendre les langues. Une heure de discussion avec un natif permet de comprendre le sens général (test d\'INT à  -20%). Une scène complète d\'étude (par ex. une journée) permet d\'obtenir la nouvelle langue en Novice.',
+                aplicable: false,
+                checkPrerequisFunction: function(caracs) {
+                    return caracs.int >= 50;
+                }
+            },
+            'reservoir': {
+                nom: 'Réservoir',
+                prerequis: 'INT 60',
+                effets: 'Ton maximum de Flux (hors combat) augmente de +2. En fin de combat, tu peux conserver jusqu\'à  2 + INT/25 cartes (au lieu de 2 + VOL/25).',
+                aplicable: true,
+                applyModifiers: function() {
+                    // Cette fonction sera appelée quand le don est sélectionné
+                    return {
+                        fluxBonus: 2,
+                        useIntForCards: true
+                    };
+                },
+                checkPrerequisFunction: function(caracs) {
+                    return caracs.int >= 60;
+                }
+            },
+            'sauveteur': {
+                nom: 'Sauveteur',
+                prerequis: 'Soins Rang 2',
+                effets: 'Stabilise un compagnon à  D6+3 Ancrages au lieu de 1 pour 1 Flux (et 2 Cartes en Combat).',
+                aplicable: false,
+                checkPrerequisFunction: function(caracs) {
+                    return true; // Vérification de compétence à  faire manuellement
+                }
+            },
+            'second_souffle': {
+                nom: 'Second souffle',
+                prerequis: 'CON 60',
+                effets: 'Une fois par Combat, pour une Action, récupère immédiatement D6+2 Ancrage. Si tu joues Coupes sur l\'action, ajoute +1 Ancrage par carte de Coupes jouée.',
+                aplicable: false,
+                checkPrerequisFunction: function(caracs) {
+                    return caracs.con >= 60;
+                }
+            },
+            'sens_orientation': {
+                nom: 'Sens de l\'orientation',
+                prerequis: 'PER 30 ou INT 30',
+                effets: 'Ne se perd jamais, retrouve toujours son chemin grâce aux indices les plus subtils. +20% aux jets pour s\'orienter.',
+                aplicable: false,
+                checkPrerequisFunction: function(caracs) {
+                    return caracs.per >= 30 || caracs.int >= 30;
+                }
+            },
+            'stoique': {
+                nom: 'Stoïque',
+                prerequis: 'VOL 50 et CON 50',
+                effets: 'Résiste aux tentations, aux chantages, aux influences mentales légères par la force de sa discipline. +20% contre les effets mineurs (peur, tentation, charmes faibles, etc.) ; +10% contre les effets plus forts ; 1/scène peut ignorer un échec d\'Essence (le convertir en réussite simple).',
+                aplicable: false,
+                checkPrerequisFunction: function(caracs) {
+                    return caracs.vol >= 50 && caracs.con >= 50;
+                }
+            },
+            'tireur_elite': {
+                nom: 'Tireur d\'élite',
+                prerequis: 'PER 60, Combat à  distance Rang 2',
+                effets: 'Ignore âˆ’10% de malus de portée/couvert. 1/scène, transforme une réussite simple de Tir en réussite critique.',
+                aplicable: false,
+                checkPrerequisFunction: function(caracs) {
+                    return caracs.per >= 60;
+                }
+            },
+            'vif_eclair': {
+                nom: 'Vif comme l\'éclair',
+                prerequis: 'AGI 50',
+                effets: 'Au début de chaque Tour, reçois un Jeton Vitesse de plus.',
+                aplicable: true,
+                applyModifiers: function() {
+                    return {
+                        jetonsVitesseBonus: 1
+                    };
+                },
+                checkPrerequisFunction: function(caracs) {
+                    return caracs.agi >= 50;
+                }
+            }
+        };
+
+        // Base de données des capacités de voies
+        const capacitesDatabase = {
+            mars: {
+                nom: "Mars",
+                theme: "Combat",
+                sentierA: "Pourfendeur (dégâts, assassinat)",
+                sentierB: "Défenseur (défense, contrôle)",
+                capacites: [
+                    {
+                        degre: 1,
+                        sentier: null,
+                        nom: "Frappe précise",
+                        cout: "1 Flux + 1 carte",
+                        description: "Tu peux relancer 1D6 de dégâts après avoir lancé ton attaque (garde le meilleur résultat). Si tu joues Épées, relance 2D6."
+                    },
+                    {
+                        degre: 2,
+                        sentier: null,
+                        nom: "Parade riposte",
+                        cout: "2 Flux + 1 carte",
+                        description: "Réaction, suite à  une Défense réussie. Après une Défense réussie, tu infliges immédiatement 1D6+1 dégâts à  l'attaquant (pas de jet requis). Si tu joues une Paire, +1 dégâts."
+                    },
+                    {
+                        degre: 3,
+                        sentier: "A",
+                        nom: "Charge brisante",
+                        cout: "3 Flux + 1 carte",
+                        description: "Tu te déplaces jusqu'à  6m en ligne droite et frappes une cible : si l'attaque réussit, dégâts +1D6 et la cible recule de 2m. Si elle heurte un obstacle, +1D6 supplémentaire. Si tu joues Bâtons, +2m de déplacement."
+                    },
+                    {
+                        degre: 3,
+                        sentier: "B",
+                        nom: "Posture inébranlable",
+                        cout: "3 Flux + 1 carte (Durée)",
+                        description: "Tu gagnes Ancrage +3 et +1m de zone de contrôle (ennemis passant à  moins de 2m déclenchent une attaque d'opportunité gratuite à  1D6 dégâts). Si tu joues Deniers, coût réduit à  2 Flux."
+                    },
+                    {
+                        degre: 4,
+                        sentier: "A",
+                        nom: "Exécution",
+                        cout: "4 Flux + 1 carte",
+                        description: "Désigne une cible blessée (â‰¤50% Ancrage). Ta prochaine attaque contre elle ce Tour inflige +2D6 dégâts. Si tu joues un Trio de couleur, la cible ne peut pas utiliser Défense."
+                    },
+                    {
+                        degre: 4,
+                        sentier: "B",
+                        nom: "Interception",
+                        cout: "4 Flux + 1 carte",
+                        description: "Quand un allié à  3m est ciblé par une attaque, tu peux prendre les dégâts à  sa place et les réduire de moitié (arrondi sup.). Si tu joues Coupes, tu récupères immédiatement 1D6 Ancrage après absorption."
+                    },
+                    {
+                        degre: 5,
+                        sentier: "A",
+                        nom: "Tempête de lames",
+                        cout: "5 Flux + 1 carte",
+                        description: "Tu effectues 3 attaques cette Ronde lors d'une seule Action. Si tu élimines une cible, récupère 1 Flux. Si tu joues Brelan de figures, chaque attaque fait +1D6 dégâts."
+                    },
+                    {
+                        degre: 5,
+                        sentier: "B",
+                        nom: "Bastion",
+                        cout: "5 Flux + 1 carte (Durée)",
+                        description: "Toi et tous les alliés à  3m gagnez Ancrage +5. Les ennemis entrant dans cette zone subissent âˆ’10% à  leurs attaques. Si tu joues Paire, zone étendue à  5m."
+                    }
+                ]
+            },
+            jupiter: {
+                nom: "Jupiter",
+                theme: "Soutien",
+                sentierA: "Tisserand (buffs, contrôle, multiplicateurs)",
+                sentierB: "Restaurateur (soins massifs, résurrection)",
+                capacites: [
+                    {
+                        degre: 1,
+                        sentier: null,
+                        nom: "Souffle de vie",
+                        cout: "1 Flux + 1 carte",
+                        description: "Soigne 1D6 Ancrage à  toi ou un allié à  6m. Si tu joues Coupes : +1. Utilisable en combat sans action (défausse la carte immédiatement après résolution d'une autre action)."
+                    },
+                    {
+                        degre: 2,
+                        sentier: null,
+                        nom: "Voile protecteur",
+                        cout: "2 Flux + 1 carte",
+                        description: "Un allié à  6m gagne +10% à  sa prochaine Défense et, si la Défense réussit, il récupère 1D6 Ancrage. Si tu joues Paire, applique à  2 alliés."
+                    },
+                    {
+                        degre: 3,
+                        sentier: "A",
+                        nom: "Lien tactique",
+                        cout: "3 Flux + 1 carte (Durée)",
+                        description: "Lie 2 alliés (dont toi possible) : quand l'un attaque, l'autre gagne +1 aux dégâts sur sa prochaine attaque ce Tour. Si tu joues Trio de couleur, lie 3 alliés."
+                    },
+                    {
+                        degre: 3,
+                        sentier: "B",
+                        nom: "Régénération",
+                        cout: "3 Flux + 1 carte",
+                        description: "Soigne 2D6 Ancrage à  toi ou un allié. Si la cible est à  0 Ancrage, elle est stabilisée à  1D6+3 Ancrage au lieu de 1 Ancrage. Si tu joues Coupes, +1D6 soin additionnel."
+                    },
+                    {
+                        degre: 4,
+                        sentier: "A",
+                        nom: "Champ de distorsion",
+                        cout: "4 Flux + 1 carte (Durée)",
+                        description: "Crée une zone de 5m centrée sur toi ou un allié : les ennemis entrant dans la zone subissent âˆ’20% à  leurs jets et Terrain difficile. Alliés dans la zone gagnent +1m déplacement. Si tu joues Bâtons, zone étendue à  7m."
+                    },
+                    {
+                        degre: 4,
+                        sentier: "B",
+                        nom: "Sanctuaire",
+                        cout: "4 Flux + 1 carte (Durée)",
+                        description: "Crée une zone de 4m : les alliés à  l'intérieur récupèrent 1D6 Ancrage au début de chaque Ronde et gagnent +5% aux jets d'Essence. Les ennemis entrant dans la zone subissent âˆ’10% à  leurs attaques."
+                    },
+                    {
+                        degre: 5,
+                        sentier: "A",
+                        nom: "Apothéose",
+                        cout: "5 Flux + 1 carte",
+                        description: "Choisis 1 allié : il gagne +1D6 dégâts, +10% à  tous ses jets et ignore 1 Défense adverse sur ses 2 prochains jets de Combats ce Tour. Si tu joues Arcane Majeur, ajoute Ancrage +3 à  l'allié."
+                    },
+                    {
+                        degre: 5,
+                        sentier: "B",
+                        nom: "Relève-toi !",
+                        cout: "5 Flux + 1 carte",
+                        description: "Ramène un allié tombé à  0 Ancrage à  2D6+5 Ancrage en sacrifiant D6 Ancrage. L'allié peut agir normalement à  la prochaine Ronde. Ne fonctionne pas si l'allié est mort. Si tu joues Arcane Majeur, pas de sacrifice d'Ancrage requis."
+                    }
+                ]
+            },
+            mercure: {
+                nom: "Mercure",
+                theme: "Magie",
+                sentierA: "Entropiste (contrôle, debuffs, altération)",
+                sentierB: "Pyromancien (dégâts purs, AoE, destruction)",
+                capacites: [
+                    {
+                        degre: 1,
+                        sentier: null,
+                        nom: "Projectile arcanique",
+                        cout: "1 Flux + 1 carte",
+                        description: "Inflige 1D6+1 dégâts à  une cible à  9m. Ignore couvert partiel. Si tu joues Épées, +1."
+                    },
+                    {
+                        degre: 2,
+                        sentier: null,
+                        nom: "Barrière élémentaire",
+                        cout: "2 Flux + 1 carte (Réaction)",
+                        description: "Réduis les dégâts d'une attaque de 1D6+2. Si tu joues Deniers, coût réduit à  1 Flux."
+                    },
+                    {
+                        degre: 3,
+                        sentier: "A",
+                        nom: "Entraves spectrales",
+                        cout: "3 Flux + 1 carte",
+                        description: "Zone de 4m : les cibles à  l'intérieur sont Entravées et subissent âˆ’10% à  leurs jets jusqu'à  la fin de la Ronde. Si elles tentent de sortir, test d'AGI : échec = immobilisées jusqu'à  fin de Ronde. Si tu joues Bâtons, zone étendue à  6m."
+                    },
+                    {
+                        degre: 3,
+                        sentier: "B",
+                        nom: "Boule de feu",
+                        cout: "3 Flux + 1 carte",
+                        description: "Zone de 12m : inflige 2D6+2 dégâts à  toutes les cibles dans la zone. Si tu joues Épées, +1D6. Si une cible est un Sbire et meurt, récupère 1 Flux (non cumulable)."
+                    },
+                    {
+                        degre: 4,
+                        sentier: "A",
+                        nom: "Distorsion temporelle",
+                        cout: "4 Flux + 1 carte",
+                        description: "Cible 1 ennemi (non-Gardien) : il perd sa prochaine action. Contre un Gardien : âˆ’20% à  sa prochaine action. Si tu joues Trio de couleur, applique aussi Étourdi."
+                    },
+                    {
+                        degre: 4,
+                        sentier: "B",
+                        nom: "Rayon désintégrateur",
+                        cout: "4 Flux + 1 carte",
+                        description: "Ligne de 12m : inflige 3D6+2 dégâts à  la première cible touchée. Si tu élimines la cible, le rayon continue et frappe les cibles suivantes sur la ligne à  2D6 dégâts. Si tu joues Brelan de figures, dégâts initiaux = 4D6+2."
+                    },
+                    {
+                        degre: 5,
+                        sentier: "A",
+                        nom: "Effondrement des sens",
+                        cout: "5 Flux + 1 carte",
+                        description: "Zone de 6m : toutes les cibles subissent âˆ’20% à  tous leurs jets et âˆ’1D6 dégâts (min 1D6) jusqu'à  la fin du Tour. Les Sbires dans la zone fuient immédiatement. Si tu joues Arcane Majeur, zone étendue à  9m."
+                    },
+                    {
+                        degre: 5,
+                        sentier: "B",
+                        nom: "Cataclysme",
+                        cout: "5 Flux + 1 carte",
+                        description: "Zone de 12m : inflige 4D6+2 dégâts à  toutes les cibles. Crée un Terrain difficile permanent dans la zone (décombres/cratère). Si tu joues Épées + Arcane Majeur, dégâts 5D6+3."
+                    }
+                ]
+            }
+        };
+
+        // Configuration des caractéristiques probables par compétence
+        const competencesConfig = {
+            'athletisme': ['for', 'con', 'agi'],
+            'discretion': ['agi', 'per'],
+            'soins': ['int', 'per'],
+            'survie': ['con', 'per', 'int'],
+            'combat_rapproche': ['agi', 'for'],
+            'combat_distance': ['agi', 'for', 'per'],
+            'defense': ['agi'],
+            'manoeuvre': ['agi'],
+            'culture': ['int'],
+            'deguisement': ['int', 'agi'],
+            'occultisme': ['int'],
+            'sciences': ['int', 'per'],
+            'etiquette': ['cha'],
+            'psychologie': ['int', 'per'],
+            'representation': ['cha'],
+            'tchatche': ['int', 'cha']
+        };
+
+        const caracteristiquesNames = {
+            'for': 'FOR',
+            'agi': 'AGI',
+            'con': 'CON',
+            'per': 'PER',
+            'int': 'INT',
+            'vol': 'VOL',
+            'cha': 'CHA'
+        };
+
+        const allCaracs = ['for', 'agi', 'con', 'per', 'int', 'vol', 'cha'];
+
+        // Variables globales pour les dons actifs
+        let donsActifs = [];
+        let capacitesActives = [];
+
+        // ==================== INITIALISATION ====================
+
+        // Initialiser la datalist des arcanes majeurs
+        function initializeArcanes() {
+            const datalist = document.getElementById('arcanes-list');
+            arcanesMajeurs.forEach(arcane => {
+                const option = document.createElement('option');
+                option.value = arcane;
+                datalist.appendChild(option);
+            });
+        }
+
+        // ==================== CARACTÉRISTIQUES ====================
+
+        // Mise à  jour d'une caractéristique
+        function updateCaracteristique(caracName) {
+            const baseInput = document.getElementById(caracName + '-base');
+            let baseValue = parseInt(baseInput.value) || 3;
+
+            // Contraintes min/max
+            if (baseValue < 3) {
+                baseValue = 3;
+                baseInput.value = 3;
+            }
+            if (baseValue > 18) {
+                baseValue = 18;
+                baseInput.value = 18;
+            }
+
+            // Calcul valeur - 5
+            const multipliedValue = baseValue * 5;
+            document.getElementById(caracName).innerText = multipliedValue;
+
+            // Validation du total
+            validateCaracteristiques();
+
+            // Recalcul des dérivées
+            calculateDerived();
+        }
+
+        // Validation du total des caractéristiques
+        function validateCaracteristiques() {
+            const total = allCaracs.reduce((sum, carac) => {
+                const value = parseInt(document.getElementById(carac + '-base').value) || 0;
+                return sum + value;
+            }, 0);
+
+            const totalDisplay = document.getElementById('carac-total');
+            const validation = document.getElementById('carac-validation');
+
+            totalDisplay.innerText = total;
+
+            if (total === 70) {
+                validation.className = 'carac-validation valid';
+                validation.innerHTML = `⚒ Total : <span id="carac-total">${total}</span> / 70 points`;
+            } else {
+                validation.className = 'carac-validation invalid';
+                const diff = 70 - total;
+                const message = diff > 0 ? `Reste ${diff} point${diff > 1 ? 's' : ''} à  répartir` : `Dépassement de ${-diff} point${-diff > 1 ? 's' : ''}`;
+                validation.innerHTML = `⚒  Total : <span id="carac-total">${total}</span> / 70 points - ${message}`;
+            }
+        }
+
+        // Obtenir la valeur -5 d'une caractéristique
+        function getCaracValue(caracName) {
+            return parseInt(document.getElementById(caracName).innerText) || 50;
+        }
+
+        // Obtenir toutes les caractéristiques
+        function getAllCaracs() {
+            return {
+                for: getCaracValue('for'),
+                agi: getCaracValue('agi'),
+                con: getCaracValue('con'),
+                per: getCaracValue('per'),
+                int: getCaracValue('int'),
+                vol: getCaracValue('vol'),
+                cha: getCaracValue('cha')
+            };
+        }
+
+        // ==================== VALEURS DÉRIVÉES ====================
+
+        // Calcul des valeurs dérivées
+        function calculateDerived() {
+            const con = getCaracValue('con');
+            const agi = getCaracValue('agi');
+            const vol = getCaracValue('vol');
+            const int = getCaracValue('int');
+            const forVal = getCaracValue('for');
+            const palier = parseInt(document.getElementById('palier').value) || 1;
+
+            // Ancrage
+            const ancrageMax = Math.floor(con / 2) + (palier * 3);
+            document.getElementById('ancrage-max').value = ancrageMax;
+            document.getElementById('ancrage-actuel').value = ancrageMax;
+            document.getElementById('ancrage-agonisant').innerText = -Math.floor(con / 10);
+
+            // Essence
+            document.getElementById('essence-max').value = vol;
+            document.getElementById('essence-actuel').value = vol;
+
+            // Flux (avec bonus de Réservoir si applicable)
+            let fluxBonus = 0;
+            donsActifs.forEach(donId => {
+                const don = donsDatabase[donId];
+                if (don.aplicable && don.applyModifiers) {
+                    const modifs = don.applyModifiers();
+                    if (modifs.fluxBonus) fluxBonus += modifs.fluxBonus;
+                }
+            });
+
+            document.getElementById('flux-initial').innerText = palier + fluxBonus;
+            document.getElementById('flux-actuel').value = palier + fluxBonus;
+
+            // Impact
+            let impact = 0;
+            if (forVal <= 30) impact = -1;
+            else if (forVal >= 70) impact = 1;
+            document.getElementById('impact').innerText = impact >= 0 ? '+' + impact : impact;
+
+            // Mouvement
+            let mouvement = '5m';
+            if (agi <= 30) mouvement = '4m';
+            else if (agi >= 70) mouvement = '6m';
+            document.getElementById('mouvement').innerText = mouvement;
+
+            // Jetons Vitesse (avec bonus de Vif comme l'éclair si applicable)
+            let jetonsVitesse = Math.floor(agi / 30);
+            donsActifs.forEach(donId => {
+                const don = donsDatabase[donId];
+                if (don.aplicable && don.applyModifiers) {
+                    const modifs = don.applyModifiers();
+                    if (modifs.jetonsVitesseBonus) jetonsVitesse += modifs.jetonsVitesseBonus;
+                }
+            });
+            document.getElementById('jetons-vitesse').innerText = jetonsVitesse;
+
+            // Cartes fin combat (peut utiliser INT si Réservoir)
+            let useIntForCards = false;
+            donsActifs.forEach(donId => {
+                const don = donsDatabase[donId];
+                if (don.aplicable && don.applyModifiers) {
+                    const modifs = don.applyModifiers();
+                    if (modifs.useIntForCards) useIntForCards = true;
+                }
+            });
+
+            const cartesStat = useIntForCards ? int : vol;
+            const cartesFin = 2 + Math.floor(cartesStat / 25);
+            document.getElementById('cartes-fin').innerText = cartesFin;
+
+            // Mettre à  jour toutes les compétences
+            updateAllCompetences();
+
+            // Mettre à  jour toutes les armes (pour l'Impact)
+            updateAllArmes();
+        }
+
+        // ==================== COMPÉTENCES ====================
+
+        // Validation du total des rangs de compétences
+        function validateCompetences() {
+            const palier = parseInt(document.getElementById('palier').value) || 1;
+            const isCreation = (palier === 1);
+
+            // Calculer le total des rangs
+            let total = 0;
+            let maxRangDepasse = false;
+
+            document.querySelectorAll('.competence-row input[type="number"]').forEach(input => {
+                const rang = parseInt(input.value) || 0;
+                total += rang;
+
+                // Vérifier si un rang dépasse 3 à  la création
+                if (isCreation && rang > 3) {
+                    maxRangDepasse = true;
+                    input.style.borderColor = '#f44336';
+                } else {
+                    input.style.borderColor = '';
+                }
+            });
+
+            const totalDisplay = document.getElementById('competences-total');
+            const validation = document.getElementById('competences-validation');
+
+            totalDisplay.innerText = total;
+
+            // Messages selon le contexte
+            if (isCreation) {
+                // Validation à  la création (15 rangs, max 3)
+                if (total === 15 && !maxRangDepasse) {
+                    validation.className = 'competences-validation valid';
+                    validation.innerHTML = `⚒ Total : <span id="competences-total">${total}</span> / 15 rangs`;
+                } else if (maxRangDepasse) {
+                    validation.className = 'competences-validation invalid';
+                    validation.innerHTML = `⚒  Total : <span id="competences-total">${total}</span> / 15 rangs - Rang maximum 3 à  la création !`;
+                } else {
+                    validation.className = 'competences-validation invalid';
+                    const diff = 15 - total;
+                    const message = diff > 0 ? `Reste ${diff} rang${diff > 1 ? 's' : ''} à  répartir` : `Dépassement de ${-diff} rang${-diff > 1 ? 's' : ''}`;
+                    validation.innerHTML = `⚒  Total : <span id="competences-total">${total}</span> / 15 rangs - ${message}`;
+                }
+            } else {
+                // Après la création (information uniquement)
+                validation.className = 'competences-validation warning';
+                validation.innerHTML = `ℹ Palier ${palier} : <span id="competences-total">${total}</span> rangs investis (15 base + progressions)`;
+            }
+        }
+
+        // Créer les options d'un select de caractéristique
+        function createCaracOptions(competence, selectElement) {
+            const probables = competencesConfig[competence] || [];
+            const autres = allCaracs.filter(c => !probables.includes(c));
+
+            // Vider le select
+            selectElement.innerHTML = '';
+
+            // Ajouter les caractéristiques probables
+            probables.forEach((carac, index) => {
+                const option = document.createElement('option');
+                option.value = carac;
+                option.textContent = caracteristiquesNames[carac];
+                if (index === 0) option.selected = true;
+                selectElement.appendChild(option);
+            });
+
+            // Ajouter un séparateur si nécessaire
+            if (probables.length > 0 && autres.length > 0) {
+                const separator = document.createElement('option');
+                separator.disabled = true;
+                separator.textContent = 'â”€â”€â”€â”€â”€â”€â”€';
+                selectElement.appendChild(separator);
+            }
+
+            // Ajouter les autres caractéristiques
+            autres.forEach(carac => {
+                const option = document.createElement('option');
+                option.value = carac;
+                option.textContent = caracteristiquesNames[carac];
+                selectElement.appendChild(option);
+            });
+        }
+
+        // Initialiser tous les selects de compétences
+        function initializeCompetencesSelects() {
+            document.querySelectorAll('.competence-row').forEach(row => {
+                const competence = row.getAttribute('data-comp');
+                const select = row.querySelector('select');
+                if (competence && select) {
+                    createCaracOptions(competence, select);
+                }
+            });
+        }
+
+        // Mise à  jour des compétences
+        function updateCompetence(element) {
+            const row = element.closest('.competence-row');
+            const rang = parseInt(row.querySelector('input[type="number"]').value) || 0;
+            const caracSelect = row.querySelector('select');
+            const caracValue = getCaracValue(caracSelect.value);
+
+            // Calcul modificateur selon rang
+            const modifs = [-30, -10, 10, 20, 30, 40];
+            const modif = modifs[rang];
+            row.querySelector('.modificateur').innerText = (modif >= 0 ? '+' : '') + modif + '%';
+
+            // Calcul total (max 95)
+            const total = Math.min(95, caracValue + modif);
+            row.querySelector('.total').innerText = total + '%';
+
+            // Valider les rangs
+            validateCompetences();
+
+            // Mettre à  jour les armes si c'est une compétence de combat
+            const compName = row.getAttribute('data-comp');
+            if (compName === 'combat_rapproche' || compName === 'combat_distance') {
+                updateAllArmes();
+            }
+        }
+
+        function updateAllCompetences() {
+            document.querySelectorAll('.competence-row').forEach(row => {
+                const input = row.querySelector('input[type="number"]');
+                if (input) updateCompetence(input);
+            });
+            validateCompetences();
+            updateAllArmes();
+        }
+
+        // ==================== DONS ====================
+
+        // Ajouter un don
+        function addDon() {
+            const container = document.getElementById('dons-list');
+            const count = donsActifs.length + 1;
+            const donId = 'don-' + Date.now();
+
+            const div = document.createElement('div');
+            div.className = 'don-select-container';
+            div.id = donId;
+
+            const caracs = getAllCaracs();
+
+            // Créer le select
+            let optionsHTML = '<option value="">-- Choisir un don --</option>';
+
+            // Trier les dons par prérequis respectés
+            const donsArray = Object.entries(donsDatabase).map(([key, don]) => ({
+                key: key,
+                ...don,
+                respectePrerequisFunction: don.checkPrerequisFunction(caracs)
+            }));
+
+            // Séparer en deux groupes
+            const donsRespectant = donsArray.filter(d => d.respectePrerequisFunction);
+            const donsNonRespectant = donsArray.filter(d => !d.respectePrerequisFunction);
+
+            // Ajouter les dons respectant les prérequis
+            donsRespectant.forEach(don => {
+                optionsHTML += `<option value="${don.key}">${don.nom} (${don.prerequis})</option>`;
+            });
+
+            // Ajouter un séparateur
+            if (donsRespectant.length > 0 && donsNonRespectant.length > 0) {
+                optionsHTML += '<option disabled>â”€â”€â”€â”€ Prérequis non respectés â”€â”€â”€â”€</option>';
+            }
+
+            // Ajouter les dons ne respectant pas les prérequis
+            donsNonRespectant.forEach(don => {
+                optionsHTML += `<option value="${don.key}" style="color: #999;">${don.nom} (${don.prerequis})</option>`;
+            });
+
+            div.innerHTML = `
+                <select onchange="selectDon('${donId}', this.value)">
+                    ${optionsHTML}
+                </select>
+                <div id="${donId}-card"></div>
+            `;
+
+            container.appendChild(div);
+        }
+
+        // Sélectionner un don
+        function selectDon(containerId, donKey) {
+            if (!donKey) {
+                document.getElementById(containerId + '-card').innerHTML = '';
+                return;
+            }
+
+            const don = donsDatabase[donKey];
+            const caracs = getAllCaracs();
+            const respectePrerequisFunction = don.checkPrerequisFunction(caracs);
+
+            const cardDiv = document.getElementById(containerId + '-card');
+            cardDiv.innerHTML = `
+                <div class="don-card ${don.aplicable ? 'applied' : ''}" style="margin-top: 15px;">
+                    <h4>
+                        ${don.nom}
+                        <button class="remove-btn" onclick="removeDon('${containerId}')">Retirer</button>
+                    </h4>
+                    <p class="prerequis">Prérequis : ${don.prerequis} ${respectePrerequisFunction ? '⚒' : 'âœ— Non respectés'}</p>
+                    <p class="effets">${don.effets}</p>
+                </div>
+            `;
+
+            // Ajouter à  la liste des dons actifs
+            if (!donsActifs.includes(donKey)) {
+                donsActifs.push(donKey);
+            }
+
+            // Recalculer les dérivées si applicable
+            if (don.aplicable) {
+                calculateDerived();
+            }
+        }
+
+        // Retirer un don
+        function removeDon(containerId) {
+            const container = document.getElementById(containerId);
+            const select = container.querySelector('select');
+            const donKey = select.value;
+
+            // Retirer de la liste des dons actifs
+            donsActifs = donsActifs.filter(d => d !== donKey);
+
+            // Supprimer l'élément
+            container.remove();
+
+            // Recalculer les dérivées
+            calculateDerived();
+        }
+
+        // ==================== VOIES ET CAPACITÉS ====================
+
+        // Mettre à  jour les capacités disponibles selon la voie choisie
+        function updateVoieCapacites() {
+            const voie = document.getElementById('voie').value;
+            const sentier = document.getElementById('sentier').value;
+
+            if (!voie) return;
+
+            // Afficher les infos de la voie
+            console.log('Voie sélectionnée:', voie, 'Sentier:', sentier);
+        }
+
+        // Ajouter une capacité
+        let capaciteSeq = 0;
+        function addCapacite() {
+            const voie = document.getElementById('voie').value;
+            const sentier = document.getElementById('sentier').value;
+            const palier = parseInt(document.getElementById('palier').value) || 1;
+
+            if (!voie) {
+                alert('Veuillez d\'abord choisir une Voie');
+                return;
+            }
+
+            const container = document.getElementById('capacites-list');
+            const capaciteId = 'capacite-' + (++capaciteSeq);
+
+            const voieData = capacitesDatabase[voie];
+
+            // Filtrer les capacités disponibles
+            let capacitesDisponibles = voieData.capacites.filter(cap => {
+                // Degré 1 et 2 toujours disponibles
+                if (cap.degre <= 2) return true;
+
+                // Degré 3+ nécessite un sentier
+                if (cap.degre >= 3 && !sentier) return false;
+
+                // Vérifier que le sentier correspond
+                if (cap.sentier && cap.sentier !== sentier) return false;
+
+                return true;
+            });
+
+            const div = document.createElement('div');
+            div.className = 'don-select-container';
+            div.id = capaciteId;
+
+            let optionsHTML = '<option value="">-- Choisir une capacité --</option>';
+
+            capacitesDisponibles.forEach(cap => {
+                const degreeLabel = cap.sentier ? `${cap.degre}${cap.sentier}` : cap.degre;
+                optionsHTML += `<option value="${cap.degre}-${cap.sentier || 'null'}">Degré ${degreeLabel} : ${cap.nom}</option>`;
+            });
+
+            div.innerHTML = `
+                <select onchange="selectCapacite('${capaciteId}', '${voie}', this.value)">
+                    ${optionsHTML}
+                </select>
+                <div id="${capaciteId}-card"></div>
+            `;
+
+            container.appendChild(div);
+        }
+
+        // Sélectionner une capacité
+        function selectCapacite(containerId, voie, capaciteValue) {
+            if (!capaciteValue) {
+                document.getElementById(containerId + '-card').innerHTML = '';
+                return;
+            }
+
+            const [degre, sentier] = capaciteValue.split('-');
+            const voieCourante = (document.getElementById('voie') && document.getElementById('voie').value) || voie || '';
+            const voieData = capacitesDatabase[voieCourante];
+            if (!voieData) return;
+
+            const capacite = voieData.capacites.find(c =>
+                c.degre === parseInt(degre) &&
+                (c.sentier || 'null') === sentier
+            );
+
+            if (!capacite) return;
+
+            const cardDiv = document.getElementById(containerId + '-card');
+            const degreeLabel = capacite.sentier ? `${capacite.degre}${capacite.sentier}` : capacite.degre;
+
+            cardDiv.innerHTML = `
+                <div class="capacite-item" style="margin-top: 15px;">
+                    <h4>
+                        Degré ${degreeLabel} : ${capacite.nom}
+                        <button class="remove-btn" onclick="removeCapacite('${containerId}')">Retirer</button>
+                    </h4>
+                    <p class="cout">Coût : ${capacite.cout}</p>
+                    <p>${capacite.description}</p>
+                </div>
+            `;
+
+            // Ajouter à la liste des capacités actives (dédup)
+            if (!capacitesActives.includes(capaciteValue)) {
+                capacitesActives.push(capaciteValue);
+            }
+        }
+
+        // Retirer une capacité
+        function removeCapacite(containerId) {
+            const container = document.getElementById(containerId);
+            const select = container.querySelector('select');
+            const capaciteValue = select.value;
+
+            // Retirer de la liste des capacités actives
+            capacitesActives = capacitesActives.filter(c => c !== capaciteValue);
+
+            // Supprimer l'élément
+            container.remove();
+        }
+
+        // ==================== AUTRES ====================
+
+        // Obtenir le rang d'une compétence par son data-comp
+        function getCompetenceRang(compName) {
+            const row = document.querySelector(`.competence-row[data-comp="${compName}"]`);
+            if (!row) return 0;
+            const input = row.querySelector('input[type="number"]');
+            return parseInt(input.value) || 0;
+        }
+
+        // Calculer les dégâts d'une arme selon le rang
+        function calculateArmeDegats(rang) {
+            const degatsParRang = {
+                0: '1D6',
+                1: '1D6+1',
+                2: '2D6',
+                3: '2D6+2',
+                4: '3D6',
+                5: '3D6+3'
+            };
+            return degatsParRang[rang] || '1D6';
+        }
+
+        // Mettre à  jour l'affichage de l'Impact dans l'en-tête
+        function updateImpactDisplay() {
+            const impact = parseInt(document.getElementById('impact').innerText) || 0;
+            const impactDisplay = document.getElementById('impact-armes-display');
+
+            if (impact > 0) {
+                impactDisplay.innerText = `+${impact}`;
+                impactDisplay.style.color = '#2e7d32';
+            } else if (impact < 0) {
+                impactDisplay.innerText = impact;
+                impactDisplay.style.color = '#c62828';
+            } else {
+                impactDisplay.innerText = '0';
+                impactDisplay.style.color = '#667eea';
+            }
+        }
+
+        // Mettre à  jour l'affichage du rang et des dégâts d'une arme
+        function updateArmeDegats(armeId) {
+            const row = document.getElementById(armeId);
+            if (!row) return;
+
+            const typeSelect = row.querySelector('.arme-type-select');
+            const rangDisplay = row.querySelector('.arme-rang-display');
+            const degatsDisplay = row.querySelector('.arme-degats-display');
+
+            const type = typeSelect.value;
+
+            // Obtenir le rang de la compétence correspondante
+            let rang = 0;
+            let competenceName = '';
+            if (type === 'cac') {
+                rang = getCompetenceRang('combat_rapproche');
+                competenceName = 'Combat rapproché';
+            } else {
+                rang = getCompetenceRang('combat_distance');
+                competenceName = 'Combat à  distance';
+            }
+
+            // Afficher le rang
+            rangDisplay.innerHTML = `<span title="${competenceName}">${rang}</span>`;
+
+            // Calculer les dégâts de base
+            const degatsBase = calculateArmeDegats(rang);
+
+            // Obtenir l'Impact actuel
+            const impact = parseInt(document.getElementById('impact').innerText) || 0;
+
+            // Construire l'affichage des dégâts
+            let degatsText = degatsBase;
+
+            // Construire le tooltip explicatif
+            const tooltipParts = [`Rang ${rang} : ${degatsBase}`];
+
+
+            // Ajouter l'Impact seulement pour les armes Cà C
+            if (type === 'cac' && impact !== 0) {
+                if (impact > 0) {
+                    degatsText += `<span class="arme-impact-inline positive">+${impact}</span>`;
+                } else {
+                    degatsText += `<span class="arme-impact-inline negative">${impact}</span>`;
+                }
+                tooltipParts.push(`Impact (FOR) : ${impact >= 0 ? '+' : ''}${impact}`);
+            }
+
+            degatsDisplay.innerHTML = degatsText;
+            degatsDisplay.title = tooltipParts.join(' | ');
+        }
+
+        // Ajouter une arme
+        function addArme() {
+            const tbody = document.getElementById('armes-list');
+            const armeId = 'arme-' + Date.now();
+            const row = tbody.insertRow();
+            row.className = 'arme-row';
+            row.id = armeId;
+
+            row.innerHTML = `
+                <td><input type="text" placeholder="Nom de l'arme"></td>
+                <td>
+                    <select class="arme-type-select" onchange="updateArmeDegats('${armeId}')">
+                        <option value="cac">Cà C</option>
+                        <option value="distance">Distance</option>
+                    </select>
+                </td>
+                <td class="arme-rang-display">0</td>
+                <td><div class="arme-degats-display">1D6</div></td>
+                <td><input type="text" placeholder="Notes"></td>
+                <td><button class="remove-arme-btn" onclick="removeArme('${armeId}')">Retirer</button></td>
+            `;
+
+            // Initialiser l'affichage des dégâts
+            updateArmeDegats(armeId);
+        }
+
+        // Retirer une arme
+        function removeArme(armeId) {
+            const row = document.getElementById(armeId);
+            if (row) row.remove();
+        }
+
+        // Mettre à  jour toutes les armes (appelé quand l'Impact ou les compétences changent)
+        function updateAllArmes() {
+            updateImpactDisplay();
+            document.querySelectorAll('.arme-row').forEach(row => {
+                updateArmeDegats(row.id);
+            });
+        }
+
+        // Info race
+        function updateRaceInfo() {
+            const race = document.getElementById('race').value;
+            const particularites = document.getElementById('particularites');
+
+            const infos = {
+                'humain': 'Polyvalence : 1-/combat, défausser jusqu\'à  2 cartes pour en piocher autant.\nAdaptable : Début session, choisir 1 famille de compétences, ignorer 1 malus sur cette famille.',
+                'borbybudy': 'Morphotype (Léger ou Massif) : +1/-1 Jeton Vitesse, +1/-1m Mouvement, -1/+1 dégâts Cà C.\nInstincts : 1-/scène, si Bâtons joué sur Survie, +5% (+10% total).',
+                'mogwai': 'Bascule (1 carte + 1 Flux) : échanger 2 caractéristiques (FOR→INT, AGI→CHA, CON→VOL).\nAspect mogwaï : +5% charme/inoffensif. Aspect gremlin : +1 dégât si Épées, +5% Combat/intimidation.',
+                'blinker': 'Clignement : défausser 1 carte → téléport 3m (30m si Folle). Action rapide.\nVoracité : coup final → consommer sucré → +1 Flux.\nChaos : si Roue de Fortune, échanger 1 carte main avec défausse + piocher 1.',
+                'entaclute': 'Amphibie : +20% Athlétisme nage OU +10% Soins près d\'eau.\nRot de la Vase : 1-/scène, test CHA → Sbire fuit / Ennemi -10% / Gardien -5%.\nMélancolie : perte Essence → pas de carte conservée fin combat.'
+            };
+            
+            particularites.value = infos[race] || '';
+        }
+
+
+        // Toggle sections
+        function toggleSection(header) {
+            const content = header.nextElementSibling;
+            const section = header.parentElement;
+            
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                section.classList.remove('collapsed');
+            } else {
+                content.style.display = 'none';
+                section.classList.add('collapsed');
+            }
+        }
+
+        // ==================== INITIALISATION ====================
+
+        // Initialisation au chargement
+        window.onload = function() {
+            // Initialiser les arcanes
+            initializeArcanes();
+            
+            // Initialiser les selects de compétences
+            initializeCompetencesSelects();
+            
+            // Initialiser les valeurs de caractéristiques
+            allCaracs.forEach(carac => {
+                updateCaracteristique(carac);
+            });
+            
+            // Calculer les dérivées
+            calculateDerived();
+            
+            // Valider les compétences
+            validateCompetences();
+            
+            // Initialiser l'affichage de l'Impact
+            updateImpactDisplay();
+        };
+        
+        // ==================== EXPORT JSON ====================
+        function exportCharacterJson() {
+            const nameInput = document.getElementById('nom');
+            let name = (nameInput && nameInput.value ? nameInput.value : '').trim();
+
+            if (!name) {
+                const proposed = prompt('Entrez un nom pour le personnage (il servira de nom de fichier) :', 'Personnage');
+                if (!proposed) {
+                    // Annulé
+                    return;
+                }
+                const cleaned = proposed.trim();
+                if (!cleaned) {
+                    // Saisie vide
+                    return;
+                }
+                // Mettre à jour le champ du nom dans la feuille
+                nameInput.value = cleaned;
+                name = cleaned;
+            }
+
+            const fileName = sanitizeFileName(name) + '.json';
+            const data = collectAllFormData();
+
+            const payload = {
+                nom: name,
+                donnees: data
+            };
+
+            const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            setTimeout(() => {
+                URL.revokeObjectURL(url);
+                a.remove();
+            }, 0);
+        }
+
+        function sanitizeFileName(name) {
+            return name
+                .replace(/[\\\/\:\*\?\"\<\>\|]/g, '_') // caractères invalides Windows
+                .replace(/\s+/g, ' ') // espaces multiples → espace simple
+                .trim()
+                .substring(0, 100); // limite raisonnable
+        }
+
+        function collectAllFormData() {
+            const result = {};
+            const counts = {};
+            const elements = Array.from(document.querySelectorAll('input, select, textarea'));
+            const capacitesContainer = document.getElementById('capacites-list');
+
+            elements.forEach((el, idx) => {
+                // Ne pas sérialiser les champs internes de la section Capacités (évite les doublons select_XX)
+                if (capacitesContainer && el.closest('#capacites-list')) {
+                    return;
+                }
+
+                let key = el.id || el.name || (el.closest('.arme-row') ? 'arme' : el.tagName.toLowerCase());
+                if (result.hasOwnProperty(key)) {
+                    counts[key] = (counts[key] || 1) + 1;
+                    key = key + '_' + counts[key];
+                }
+
+                let value;
+                if (el.tagName.toLowerCase() === 'select') {
+                    value = el.value;
+                } else if (el.type === 'checkbox' || el.type === 'radio') {
+                    value = el.checked;
+                } else {
+                    value = el.value;
+                }
+
+                result[key] = value;
+            });
+
+            // Capture structurée de la section "Voie et Capacités" avec identifiants
+            try {
+                const voieVal = (document.getElementById('voie') && document.getElementById('voie').value) || '';
+                const capSelects = Array.from(document.querySelectorAll('#capacites-list .don-select-container select'));
+                let selectedCaps = capSelects
+                    .map(sel => sel && typeof sel.value === 'string' ? sel.value : '')
+                    .filter(v => v);
+                if ((!selectedCaps || selectedCaps.length === 0) && typeof capacitesActives !== 'undefined' && Array.isArray(capacitesActives) && capacitesActives.length > 0) {
+                    // Fallback compatibilité: utiliser l'état mémoire si aucun select n'est renseigné
+                    selectedCaps = [...capacitesActives];
+                }
+                if (selectedCaps && selectedCaps.length > 0) {
+                    // Préfixe d'identifiant de voie si disponible pour une identification sans ambiguïté
+                    const capsWithIds = selectedCaps.map(v => voieVal ? (voieVal + ':' + v) : v);
+                    // Déduplication en conservant l'ordre
+                    const seen = new Set();
+                    result['__capacites'] = capsWithIds.filter(v => {
+                        if (seen.has(v)) return false;
+                        seen.add(v);
+                        return true;
+                    });
+                }
+            } catch (e) {
+                console.warn('Impossible de sérialiser les capacités:', e);
+            }
+
+            return result;
+        }
+        
+        // ==================== IMPORT JSON ====================
+        function triggerImport() {
+            const input = document.getElementById('import-file');
+            if (input) input.click();
+        }
+        
+        function onImportFileChosen(evt) {
+            const input = evt.target;
+            const file = input.files && input.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const text = e.target.result;
+                    const payload = JSON.parse(text);
+                    if (!payload || typeof payload !== 'object') {
+                        throw new Error('Format JSON invalide');
+                    }
+                    if (!payload.donnees || typeof payload.donnees !== 'object') {
+                        throw new Error('Fichier non reconnu (champ "donnees" manquant)');
+                    }
+                    applyImportedData(payload);
+                    alert('Import terminé.');
+                } catch (err) {
+                    console.error('Erreur d\'import:', err);
+                    alert('Erreur à l\'import : ' + err.message);
+                } finally {
+                    // Reset pour permettre de réimporter le même fichier si besoin
+                    input.value = '';
+                }
+            };
+            reader.onerror = () => {
+                alert('Impossible de lire le fichier sélectionné.');
+                input.value = '';
+            };
+            reader.readAsText(file, 'utf-8');
+        }
+        
+        function applyImportedData(payload) {
+            try {
+                // Mettre à jour le nom si présent
+                if (payload.nom) {
+                    const nameInput = document.getElementById('nom');
+                    if (nameInput) nameInput.value = payload.nom;
+                }
+
+                const data = payload.donnees || {};
+
+                // Reproduire exactement la même logique de clé que collectAllFormData()
+                const seen = {};
+                const elements = Array.from(document.querySelectorAll('input, select, textarea'));
+
+                elements.forEach((el) => {
+                    const inArmeRow = !!el.closest('.arme-row');
+                    const baseKey = el.id || el.name || (inArmeRow ? 'arme' : el.tagName.toLowerCase());
+
+                    let key;
+                    if (!seen[baseKey]) {
+                        seen[baseKey] = 1;
+                        key = baseKey; // première occurrence : clé simple
+                    } else {
+                        seen[baseKey] += 1;
+                        key = baseKey + '_' + seen[baseKey]; // 2e -> _2, etc.
+                    }
+
+                    if (!(key in data)) return; // rien à appliquer
+                    const value = data[key];
+
+                    if (el.tagName.toLowerCase() === 'select') {
+                        el.value = value;
+                    } else if (el.type === 'checkbox' || el.type === 'radio') {
+                        el.checked = !!value;
+                    } else {
+                        el.value = value == null ? '' : value;
+                    }
+                });
+
+                // Recréer la section "Voie et Capacités" si des données structurées existent
+                try {
+                    const caps = data['__capacites'];
+                    if (Array.isArray(caps)) {
+                        const list = document.getElementById('capacites-list');
+                        if (list) list.innerHTML = '';
+                        if (typeof capacitesActives !== 'undefined') capacitesActives = [];
+
+                        const voieSelect = document.getElementById('voie');
+                        const sentierSelect = document.getElementById('sentier');
+
+                        // Utilitaire: parser un identifiant de capacité
+                        const parseCapId = (entry) => {
+                            let voieId = null;
+                            let capVal = entry || '';
+                            if (typeof capVal === 'string' && capVal.includes(':')) {
+                                const parts = capVal.split(':');
+                                voieId = parts[0];
+                                capVal = parts.slice(1).join(':');
+                            }
+                            const segs = (capVal || '').split('-');
+                            const deg = parseInt(segs[0] || '0');
+                            const sent = segs[1] && segs[1] !== 'null' ? segs[1] : null;
+                            return { voieId, capVal, deg, sent };
+                        };
+
+                        // Appliquer une fois pour mettre à jour l'affichage de voie/sentier
+                        if (typeof updateVoieCapacites === 'function') updateVoieCapacites();
+
+                        const seenCaps = new Set();
+                        caps.forEach((entry) => {
+                            if (!entry) return;
+                            // Déduplication en entrée (utilise l'identifiant complet si dispo)
+                            if (seenCaps.has(entry)) return;
+                            seenCaps.add(entry);
+
+                            const { voieId, capVal, deg, sent } = parseCapId(entry);
+
+                            // Si l'identifiant précise la voie, l'appliquer
+                            if (voieId && voieSelect) {
+                                if (voieSelect.value !== voieId) {
+                                    voieSelect.value = voieId;
+                                    if (typeof updateVoieCapacites === 'function') updateVoieCapacites();
+                                }
+                            }
+
+                            // Si la capacité nécessite un sentier (degré >=3) et qu'une lettre est fournie, l'appliquer
+                            if (deg >= 3 && sent && sentierSelect) {
+                                if (sentierSelect.value !== sent) {
+                                    sentierSelect.value = sent;
+                                    if (typeof updateVoieCapacites === 'function') updateVoieCapacites();
+                                }
+                            }
+
+                            if (typeof addCapacite === 'function') {
+                                addCapacite();
+                                const container = list && list.lastElementChild;
+                                if (container) {
+                                    const sel = container.querySelector('select');
+                                    if (sel) {
+                                        sel.value = capVal;
+                                        if (sel.value !== capVal) {
+                                            // valeur indisponible pour voie/sentier courant: supprimer le conteneur et ignorer
+                                            container.remove();
+                                            return;
+                                        }
+                                    }
+                                    if (typeof selectCapacite === 'function') selectCapacite(container.id, undefined, capVal);
+                                }
+                            }
+                        });
+                    }
+                } catch (e) {
+                    console.warn('Avertissement durant la reconstruction des capacités:', e);
+                }
+
+                // Rafraîchir les affichages / dérivées
+                try {
+                    if (typeof allCaracs !== 'undefined' && Array.isArray(allCaracs)) {
+                        allCaracs.forEach((carac) => {
+                            if (typeof updateCaracteristique === 'function') {
+                                updateCaracteristique(carac);
+                            }
+                        });
+                    }
+                    if (typeof calculateDerived === 'function') calculateDerived();
+                    if (typeof validateCompetences === 'function') validateCompetences();
+                    if (typeof updateAllCompetences === 'function') updateAllCompetences();
+                    if (typeof updateAllArmes === 'function') updateAllArmes();
+                    if (typeof updateImpactDisplay === 'function') updateImpactDisplay();
+                    if (typeof updateRaceInfo === 'function') updateRaceInfo();
+                } catch (e) {
+                    console.warn('Avertissement durant la mise à jour des dérivées:', e);
+                }
+            } catch (e) {
+                console.error('Erreur pendant l\'application des données importées:', e);
+                alert('Erreur pendant l\'application des données importées: ' + e.message);
+            }
+        }
+    </script>
+</body>
+</html>
