@@ -966,7 +966,7 @@
                         Les modificateurs applicables sont automatiquement appliqués
                     </div>
                     <div id="dons-list"></div>
-                    <button class="add-button" onclick="addDon()">+ Ajouter un don</button>
+                    <button id="dons-add-btn" class="add-button" onclick="addDon()">+ Ajouter un don</button>
                 </div>
             </div>
 
@@ -1779,6 +1779,9 @@
 
             // Mettre à  jour toutes les armes (pour l'Impact)
             updateAllArmes();
+
+            // Valider les règles des Dons (bouton ajouter, etc.)
+            if (typeof validateDons === 'function') validateDons();
         }
 
         // ==================== COMPÉTENCES ====================
@@ -1914,8 +1917,51 @@
 
         // ==================== DONS ====================
 
+        // Helpers Dons
+        function getSelectedDonsCount(excludeContainerId) {
+            const selects = Array.from(document.querySelectorAll('#dons-list .don-select-container select'));
+            let count = 0;
+            selects.forEach(sel => {
+                const val = sel && typeof sel.value === 'string' ? sel.value : '';
+                if (!val) return;
+                // Exclure un conteneur spécifique si demandé
+                const cont = sel.closest('.don-select-container');
+                if (excludeContainerId && cont && cont.id === excludeContainerId) return;
+                count += 1;
+            });
+            return count;
+        }
+        function validateDons() {
+            const palierEl = document.getElementById('palier');
+            const palier = palierEl ? (parseInt(palierEl.value) || 1) : 1;
+            const addBtn = document.getElementById('dons-add-btn');
+            const selectedCount = getSelectedDonsCount();
+            if (palier === 1) {
+                if (addBtn) addBtn.disabled = (selectedCount >= 1);
+                // Si, pour une raison quelconque (import, bug), il y a >1 don sélectionné, on n'enlève rien automatiquement
+                // mais on désactive l'ajout et on peut alerter une seule fois.
+                if (selectedCount > 1 && !window._warnedMultiDonsP1) {
+                    window._warnedMultiDonsP1 = true;
+                    try { alert('Règle de création: au Palier 1, vous ne pouvez pas avoir plus d\'un Don. Veuillez en retirer.'); } catch (_) {}
+                }
+            } else {
+                if (addBtn) addBtn.disabled = false;
+            }
+        }
+
         // Ajouter un don
         function addDon() {
+            const palierEl = document.getElementById('palier');
+            const palier = palierEl ? (parseInt(palierEl.value) || 1) : 1;
+            // Au palier 1, interdire d'ajouter un nouveau Don si un autre est déjà sélectionné
+            if (palier === 1 && getSelectedDonsCount() >= 1) {
+                if (!window._isImporting) {
+                    try { alert('Au Palier 1, un seul Don est autorisé. Retirez un Don avant d\'en ajouter un autre.'); } catch (_) {}
+                }
+                validateDons();
+                return;
+            }
+
             const container = document.getElementById('dons-list');
             const count = donsActifs.length + 1;
             const donId = 'don-' + (++donSeq);
@@ -1923,6 +1969,8 @@
             const div = document.createElement('div');
             div.className = 'don-select-container';
             div.id = donId;
+            // Suivi de la sélection précédente pour ce conteneur
+            div.dataset.selectedDon = '';
 
             const caracs = getAllCaracs();
 
@@ -1967,17 +2015,68 @@
 
         // Sélectionner un don
         function selectDon(containerId, donKey) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            const selectEl = container.querySelector('select');
+            const prev = container.dataset.selectedDon || '';
+
+            // Si aucune sélection (choix vide) → nettoyer
             if (!donKey) {
-                document.getElementById(containerId + '-card').innerHTML = '';
+                // Retirer l'ancien don actif si présent
+                if (prev) {
+                    donsActifs = donsActifs.filter(d => d !== prev);
+                }
+                const cardDiv0 = document.getElementById(containerId + '-card');
+                if (cardDiv0) cardDiv0.innerHTML = '';
+                container.dataset.selectedDon = '';
+                validateDons();
+                // Recalculer si l'ancien avait des effets
+                calculateDerived();
                 return;
             }
 
+            // Règle: au Palier 1, on ne peut pas avoir plus d'un Don sélectionné à la fois
+            const palierEl = document.getElementById('palier');
+            const palier = palierEl ? (parseInt(palierEl.value) || 1) : 1;
+            if (palier === 1) {
+                const othersCount = getSelectedDonsCount(containerId);
+                // Si un autre conteneur a déjà un Don sélectionné, on refuse
+                if (othersCount >= 1 && (!prev || prev !== donKey)) {
+                    if (!window._isImporting) {
+                        try { alert('Au Palier 1, un seul Don est autorisé. Retirez un Don avant d\'en choisir un autre.'); } catch (_) {}
+                    }
+                    // Revenir à l'état précédent visuellement
+                    if (selectEl) selectEl.value = prev || '';
+                    const cardDivR = document.getElementById(containerId + '-card');
+                    if (prev) {
+                        const donPrev = donsDatabase[prev];
+                        const caracsPrev = getAllCaracs();
+                        const respectePrev = donPrev.checkPrerequisFunction(caracsPrev);
+                        if (cardDivR) cardDivR.innerHTML = `
+                <div class="don-card ${donPrev.aplicable ? 'applied' : ''}" style="margin-top: 15px;">
+                    <h4>
+                        ${donPrev.nom}
+                        <button class="remove-btn" onclick="removeDon('${containerId}')">Retirer</button>
+                    </h4>
+                    <p class="prerequis">Prérequis : ${donPrev.prerequis} ${respectePrev ? '⚒' : 'âœ— Non respectés'}</p>
+                    <p class="effets">${donPrev.effets}</p>
+                </div>`;
+                    } else {
+                        if (cardDivR) cardDivR.innerHTML = '';
+                    }
+                    validateDons();
+                    return;
+                }
+            }
+
+            // Mettre à jour la carte et l'état
             const don = donsDatabase[donKey];
             const caracs = getAllCaracs();
             const respectePrerequisFunction = don.checkPrerequisFunction(caracs);
 
             const cardDiv = document.getElementById(containerId + '-card');
-            cardDiv.innerHTML = `
+            if (cardDiv) {
+                cardDiv.innerHTML = `
                 <div class="don-card ${don.aplicable ? 'applied' : ''}" style="margin-top: 15px;">
                     <h4>
                         ${don.nom}
@@ -1987,15 +2086,25 @@
                     <p class="effets">${don.effets}</p>
                 </div>
             `;
+            }
 
-            // Ajouter à  la liste des dons actifs
+            // Retirer l'ancien don de la liste si on change dans le même conteneur
+            if (prev && prev !== donKey) {
+                donsActifs = donsActifs.filter(d => d !== prev);
+            }
+            // Ajouter à la liste des dons actifs
             if (!donsActifs.includes(donKey)) {
                 donsActifs.push(donKey);
             }
+            // Mémoriser la sélection courante pour ce conteneur
+            container.dataset.selectedDon = donKey;
 
             // Recalculer les dérivées si applicable
             if (don.aplicable) {
                 calculateDerived();
+            } else {
+                // Même si non applicable, valider l'UI (bouton ajouter, etc.)
+                validateDons();
             }
         }
 
@@ -2013,6 +2122,8 @@
 
             // Recalculer les dérivées
             calculateDerived();
+            // Valider les règles des Dons (réactive le bouton si besoin)
+            if (typeof validateDons === 'function') validateDons();
         }
 
         // ==================== VOIES ET CAPACITÉS ====================
@@ -2544,6 +2655,9 @@
 
             // Visibilité initiale du Sentier
             updateSentierVisibility();
+
+            // Valider les règles des Dons (état du bouton, avertissements)
+            if (typeof validateDons === 'function') validateDons();
         };
         
         // ==================== EXPORT JSON ====================
@@ -2992,7 +3106,10 @@
                             seenDons.add(donKey);
 
                             if (typeof addDon === 'function') {
+                                // Marquer l'import pour éviter des alertes répétées
+                                window._isImporting = true;
                                 addDon();
+                                window._isImporting = false;
                                 // Sélectionner la dernière entrée ajoutée
                                 const containers = document.querySelectorAll('#dons-list .don-select-container');
                                 const last = containers[containers.length - 1];
@@ -3083,6 +3200,7 @@
                     if (typeof updateAllArmes === 'function') updateAllArmes();
                     if (typeof updateImpactDisplay === 'function') updateImpactDisplay();
                     if (typeof updateRaceInfo === 'function') updateRaceInfo();
+                    if (typeof validateDons === 'function') validateDons();
                 } catch (e) {
                     console.warn('Avertissement durant la mise à jour des dérivées:', e);
                 }
