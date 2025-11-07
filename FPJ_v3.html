@@ -1085,7 +1085,7 @@
             'affinite_voie': {
                 nom: 'Affinité de Voie',
                 prerequis: 'VOL 30 et INT 30',
-                effets: 'Coûte âˆ’1 Flux sur tous les coûts d\'activation des Capacités de sa Voie (minimum 1 Flux). Représente une facilité naturelle exceptionnelle avec sa discipline.',
+                effets: 'Coûte -1 Flux sur tous les coûts d\'activation des Capacités de sa Voie (minimum 1 Flux). Représente une facilité naturelle exceptionnelle avec sa discipline.',
                 aplicable: true,
                 checkPrerequisFunction: function(caracs) {
                     return caracs.vol >= 30 && caracs.int >= 30;
@@ -1103,7 +1103,7 @@
             'briseur': {
                 nom: 'Briseur',
                 prerequis: 'FOR 60',
-                effets: '+10 dégâts contre objets/structures ; +20% aux tests pour forcer, enfoncer, soulever, défoncer. En combat, 1/scène, peut imposer Â« Entravé Â» sur une cible touchée.',
+                effets: '+10 dégâts contre objets/structures ; +20% aux tests pour forcer, enfoncer, soulever, défoncer. En combat, 1/scène, peut imposer « Entravé » sur une cible touchée.',
                 aplicable: false,
                 checkPrerequisFunction: function(caracs) {
                     return caracs.for >= 60;
@@ -1148,7 +1148,7 @@
             'feinteur': {
                 nom: 'Feinteur',
                 prerequis: 'AGI 50, Combat rapproché Rang 1',
-                effets: 'Quand tu annonces une attaque de mêlée, tu peux dépenser 1 carte supplémentaire : si l\'attaque réussit, la cible subit âˆ’10% à  sa prochaine Défense contre toi ce Tour. Paire jouée : le malus passe à  âˆ’20%.',
+                effets: 'Quand tu annonces une attaque de mêlée, tu peux dépenser 1 carte supplémentaire : si l\'attaque réussit, la cible subit -10% à  sa prochaine Défense contre toi ce Tour. Paire jouée : le malus passe à  -20%.',
                 aplicable: false,
                 checkPrerequisFunction: function(caracs) {
                     return caracs.agi >= 50;
@@ -1263,7 +1263,7 @@
             'tireur_elite': {
                 nom: 'Tireur d\'élite',
                 prerequis: 'PER 60, Combat à  distance Rang 2',
-                effets: 'Ignore âˆ’10% de malus de portée/couvert. 1/scène, transforme une réussite simple de Tir en réussite critique.',
+                effets: 'Ignore -10% de malus de portée/couvert. 1/scène, transforme une réussite simple de Tir en réussite critique.',
                 aplicable: false,
                 checkPrerequisFunction: function(caracs) {
                     return caracs.per >= 60;
@@ -1347,7 +1347,7 @@
                         sentier: "B",
                         nom: "Bastion",
                         cout: "5 Flux + 1 carte (Durée)",
-                        description: "Toi et tous les alliés à  3m gagnez Ancrage +5. Les ennemis entrant dans cette zone subissent âˆ’10% à  leurs attaques. Si tu joues Paire, zone étendue à  5m."
+                        description: "Toi et tous les alliés à  3m gagnez Ancrage +5. Les ennemis entrant dans cette zone subissent -10% à  leurs attaques. Si tu joues Paire, zone étendue à  5m."
                     }
                 ]
             },
@@ -1390,14 +1390,14 @@
                         sentier: "A",
                         nom: "Champ de distorsion",
                         cout: "4 Flux + 1 carte (Durée)",
-                        description: "Crée une zone de 5m centrée sur toi ou un allié : les ennemis entrant dans la zone subissent âˆ’20% à  leurs jets et Terrain difficile. Alliés dans la zone gagnent +1m déplacement. Si tu joues Bâtons, zone étendue à  7m."
+                        description: "Crée une zone de 5m centrée sur toi ou un allié : les ennemis entrant dans la zone subissent -20% à  leurs jets et Terrain difficile. Alliés dans la zone gagnent +1m déplacement. Si tu joues Bâtons, zone étendue à  7m."
                     },
                     {
                         degre: 4,
                         sentier: "B",
                         nom: "Sanctuaire",
                         cout: "4 Flux + 1 carte (Durée)",
-                        description: "Crée une zone de 4m : les alliés à  l'intérieur récupèrent 1D6 Ancrage au début de chaque Ronde et gagnent +5% aux jets d'Essence. Les ennemis entrant dans la zone subissent âˆ’10% à  leurs attaques."
+                        description: "Crée une zone de 4m : les alliés à  l'intérieur récupèrent 1D6 Ancrage au début de chaque Ronde et gagnent +5% aux jets d'Essence. Les ennemis entrant dans la zone subissent -10% à  leurs attaques."
                     },
                     {
                         degre: 5,
@@ -1440,7 +1440,7 @@
                         sentier: "A",
                         nom: "Entraves spectrales",
                         cout: "3 Flux + 1 carte",
-                        description: "Zone de 4m : les cibles à  l'intérieur sont Entravées et subissent âˆ’10% à  leurs jets jusqu'à  la fin de la Ronde. Si elles tentent de sortir, test d'AGI : échec = immobilisées jusqu'à  fin de Ronde. Si tu joues Bâtons, zone étendue à  6m."
+                        description: "Zone de 4m : les cibles à  l'intérieur sont Entravées et subissent -10% à  leurs jets jusqu'à  la fin de la Ronde. Si elles tentent de sortir, test d'AGI : échec = immobilisées jusqu'à  fin de Ronde. Si tu joues Bâtons, zone étendue à  6m."
                     },
                     {
                         degre: 3,
@@ -1454,7 +1454,7 @@
                         sentier: "A",
                         nom: "Distorsion temporelle",
                         cout: "4 Flux + 1 carte",
-                        description: "Cible 1 ennemi (non-Gardien) : il perd sa prochaine action. Contre un Gardien : âˆ’20% à  sa prochaine action. Si tu joues Trio de couleur, applique aussi Étourdi."
+                        description: "Cible 1 ennemi (non-Gardien) : il perd sa prochaine action. Contre un Gardien : -20% à  sa prochaine action. Si tu joues Trio de couleur, applique aussi Étourdi."
                     },
                     {
                         degre: 4,
@@ -1468,7 +1468,7 @@
                         sentier: "A",
                         nom: "Effondrement des sens",
                         cout: "5 Flux + 1 carte",
-                        description: "Zone de 6m : toutes les cibles subissent âˆ’20% à  tous leurs jets et âˆ’1D6 dégâts (min 1D6) jusqu'à  la fin du Tour. Les Sbires dans la zone fuient immédiatement. Si tu joues Arcane Majeur, zone étendue à  9m."
+                        description: "Zone de 6m : toutes les cibles subissent -20% à  tous leurs jets et -1D6 dégâts (min 1D6) jusqu'à  la fin du Tour. Les Sbires dans la zone fuient immédiatement. Si tu joues Arcane Majeur, zone étendue à  9m."
                     },
                     {
                         degre: 5,
@@ -1748,7 +1748,7 @@
             if (probables.length > 0 && autres.length > 0) {
                 const separator = document.createElement('option');
                 separator.disabled = true;
-                separator.textContent = 'â”€â”€â”€â”€â”€â”€â”€';
+                separator.textContent = '-------';
                 selectElement.appendChild(separator);
             }
 
@@ -1842,7 +1842,7 @@
 
             // Ajouter un séparateur
             if (donsRespectant.length > 0 && donsNonRespectant.length > 0) {
-                optionsHTML += '<option disabled>â”€â”€â”€â”€ Prérequis non respectés â”€â”€â”€â”€</option>';
+                optionsHTML += '<option disabled>---- Prérequis non respectés ----</option>';
             }
 
             // Ajouter les dons ne respectant pas les prérequis
@@ -1914,85 +1914,180 @@
 
         // Mettre à  jour les capacités disponibles selon la voie choisie
         function updateVoieCapacites() {
-            const voie = document.getElementById('voie').value;
-            const sentier = document.getElementById('sentier').value;
+            const voieEl = document.getElementById('voie');
+            const sentierEl = document.getElementById('sentier');
+            const voie = voieEl ? voieEl.value : '';
+            const sentier = sentierEl ? sentierEl.value : '';
 
-            if (!voie) return;
+            // Mémoriser l'ancien état
+            if (typeof window._lastVoie === 'undefined') window._lastVoie = '';
+            if (typeof window._lastSentier === 'undefined') window._lastSentier = '';
 
-            // Afficher les infos de la voie
-            console.log('Voie sélectionnée:', voie, 'Sentier:', sentier);
+            // Si la voie a changé → tout nettoyer et réinitialiser le sentier
+            if (window._lastVoie !== voie) {
+                clearAllCapacites();
+                if (sentierEl) sentierEl.value = '';
+                window._lastVoie = voie;
+                window._lastSentier = '';
+                updateSentierVisibility();
+                return;
+            }
+
+            // Si le sentier a changé → retirer les capacités de degré > 2
+            if (window._lastSentier !== sentier) {
+                removeCapacitesAbove2();
+                window._lastSentier = sentier;
+            }
+
+            // Mettre à jour la visibilité du champ Sentier
+            updateSentierVisibility();
         }
 
-        // Ajouter une capacité
-        let capaciteSeq = 0;
-        function addCapacite() {
+        // Helpers Capacités
+        function clearAllCapacites() {
+            const list = document.getElementById('capacites-list');
+            if (list) list.innerHTML = '';
+            capacitesActives = [];
+            // Mettre à jour la visibilité des boutons Retirer
+            if (typeof updateCapaciteRemoveButtons === 'function') updateCapaciteRemoveButtons();
+        }
+        function removeCapacitesAbove2() {
+            const list = document.getElementById('capacites-list');
+            if (!list) return;
+            const toRemove = Array.from(list.children).filter(div => parseInt(div.dataset.degre || '0') > 2);
+            toRemove.forEach(div => {
+                const val = div.dataset.capValue;
+                if (val) {
+                    capacitesActives = capacitesActives.filter(c => c !== val);
+                }
+                div.remove();
+            });
+            // Mettre à jour la visibilité des boutons Retirer
+            if (typeof updateCapaciteRemoveButtons === 'function') updateCapaciteRemoveButtons();
+        }
+
+        // Afficher le bouton "Retirer" uniquement sur la dernière capacité
+        function updateCapaciteRemoveButtons() {
+            const list = document.getElementById('capacites-list');
+            if (!list) return;
+            const items = Array.from(list.children);
+            items.forEach((div, idx) => {
+                const btn = div.querySelector('.remove-btn');
+                if (!btn) return;
+                if (idx === items.length - 1) {
+                    btn.style.display = '';
+                } else {
+                    btn.style.display = 'none';
+                }
+            });
+        }
+        function hasDegre(n) {
+            return capacitesActives.some(v => {
+                const d = parseInt((v.split('-')[0]) || '0');
+                return d === n;
+            });
+        }
+        function getNextCapValue() {
             const voie = document.getElementById('voie').value;
             const sentier = document.getElementById('sentier').value;
-            const palier = parseInt(document.getElementById('palier').value) || 1;
+            if (!voie) return null;
+            if (!hasDegre(1)) return '1-null';
+            if (!hasDegre(2)) return '2-null';
+            if (!sentier) return null; // besoin sentier pour la suite
+            if (!hasDegre(3)) return `3-${sentier}`;
+            if (!hasDegre(4)) return `4-${sentier}`;
+            if (!hasDegre(5)) return `5-${sentier}`;
+            return null; // tout pris
+        }
 
+        // Ajouter une capacité (séquentielle). Optionnellement cibler une valeur précise (ex: '3-A').
+        let capaciteSeq = 0;
+        function addCapacite(targetValue, fromImport) {
+            const voie = document.getElementById('voie').value;
+            const sentier = document.getElementById('sentier').value;
             if (!voie) {
                 alert('Veuillez d\'abord choisir une Voie');
                 return;
             }
 
-            const container = document.getElementById('capacites-list');
-            const capaciteId = 'capacite-' + (++capaciteSeq);
+            let valueToAdd = targetValue;
+            if (!valueToAdd) {
+                valueToAdd = getNextCapValue();
+                if (!valueToAdd) {
+                    if (!hasDegre(2)) {
+                        alert('Ajoutez d\'abord la Capacité de Degré 1 puis 2.');
+                    } else if (!sentier) {
+                        alert('Veuillez sélectionner un Sentier pour ajouter la Capacité de Degré 3.');
+                    } else {
+                        alert('Toutes les capacités ont déjà été ajoutées.');
+                    }
+                    return;
+                }
+            }
 
-            const voieData = capacitesDatabase[voie];
-
-            // Filtrer les capacités disponibles
-            let capacitesDisponibles = voieData.capacites.filter(cap => {
-                // Degré 1 et 2 toujours disponibles
-                if (cap.degre <= 2) return true;
-
-                // Degré 3+ nécessite un sentier
-                if (cap.degre >= 3 && !sentier) return false;
-
-                // Vérifier que le sentier correspond
-                if (cap.sentier && cap.sentier !== sentier) return false;
-
-                return true;
-            });
-
-            const div = document.createElement('div');
-            div.className = 'don-select-container';
-            div.id = capaciteId;
-
-            let optionsHTML = '<option value="">-- Choisir une capacité --</option>';
-
-            capacitesDisponibles.forEach(cap => {
-                const degreeLabel = cap.sentier ? `${cap.degre}${cap.sentier}` : cap.degre;
-                optionsHTML += `<option value="${cap.degre}-${cap.sentier || 'null'}">Degré ${degreeLabel} : ${cap.nom}</option>`;
-            });
-
-            div.innerHTML = `
-                <select onchange="selectCapacite('${capaciteId}', '${voie}', this.value)">
-                    ${optionsHTML}
-                </select>
-                <div id="${capaciteId}-card"></div>
-            `;
-
-            container.appendChild(div);
-        }
-
-        // Sélectionner une capacité
-        function selectCapacite(containerId, voie, capaciteValue) {
-            if (!capaciteValue) {
-                document.getElementById(containerId + '-card').innerHTML = '';
+            // Éviter les doublons
+            if (capacitesActives.includes(valueToAdd)) {
+                if (!fromImport) alert('Cette capacité est déjà ajoutée.');
                 return;
             }
 
-            const [degre, sentier] = capaciteValue.split('-');
+            // Vérifier l'existence dans la DB pour la voie/sentier courants
+            const [degStr, s] = valueToAdd.split('-');
+            const deg = parseInt(degStr);
+            const sEff = s === 'null' ? null : s;
+            if (deg >= 3 && !sentier && !fromImport) {
+                alert('Veuillez sélectionner un Sentier avant d\'ajouter cette capacité.');
+                return;
+            }
+            const voieData = capacitesDatabase[voie];
+            const exists = voieData && voieData.capacites.some(c => c.degre === deg && (c.sentier || 'null') === (sEff || 'null'));
+            if (!exists) {
+                if (!fromImport) alert('Capacité indisponible pour la voie/sentier sélectionnés.');
+                return;
+            }
+
+            const container = document.getElementById('capacites-list');
+            const capaciteId = 'capacite-' + (++capaciteSeq);
+            const div = document.createElement('div');
+            div.className = 'don-select-container';
+            div.id = capaciteId;
+            div.dataset.capValue = valueToAdd;
+            div.dataset.degre = String(deg);
+            div.innerHTML = `
+                <div id="${capaciteId}-card"></div>
+            `;
+            container.appendChild(div);
+
+            // Rendre la carte
+            selectCapacite(capaciteId, voie, valueToAdd);
+        }
+
+        // Sélectionner/afficher une capacité dans son conteneur (rend la carte et enregistre la valeur)
+        function selectCapacite(containerId, voie, capaciteValue) {
+            if (!capaciteValue) {
+                const card = document.getElementById(containerId + '-card');
+                if (card) card.innerHTML = '';
+                return;
+            }
+
+            const [degreStr, sentier] = capaciteValue.split('-');
+            const degre = parseInt(degreStr);
             const voieCourante = (document.getElementById('voie') && document.getElementById('voie').value) || voie || '';
             const voieData = capacitesDatabase[voieCourante];
             if (!voieData) return;
 
             const capacite = voieData.capacites.find(c =>
-                c.degre === parseInt(degre) &&
+                c.degre === degre &&
                 (c.sentier || 'null') === sentier
             );
 
             if (!capacite) return;
+
+            const container = document.getElementById(containerId);
+            if (container) {
+                container.dataset.capValue = capaciteValue;
+                container.dataset.degre = String(degre);
+            }
 
             const cardDiv = document.getElementById(containerId + '-card');
             const degreeLabel = capacite.sentier ? `${capacite.degre}${capacite.sentier}` : capacite.degre;
@@ -2012,19 +2107,60 @@
             if (!capacitesActives.includes(capaciteValue)) {
                 capacitesActives.push(capaciteValue);
             }
+
+            // Mettre à jour visibilité du sentier si besoin
+            updateSentierVisibility();
+            // Seule la dernière capacité peut être retirée: mettre à jour la visibilité des boutons
+            if (typeof updateCapaciteRemoveButtons === 'function') updateCapaciteRemoveButtons();
         }
 
-        // Retirer une capacité
+        // Retirer une capacité (seule la dernière peut être retirée)
         function removeCapacite(containerId) {
             const container = document.getElementById(containerId);
-            const select = container.querySelector('select');
-            const capaciteValue = select.value;
+            if (!container) return;
+            const list = document.getElementById('capacites-list');
+            if (!list) return;
+
+            const items = Array.from(list.children);
+            const isLast = items.length > 0 && items[items.length - 1] === container;
+            if (!isLast) {
+                alert('Vous ne pouvez retirer que la dernière capacité ajoutée.');
+                return;
+            }
+
+            const capaciteValue = container.dataset.capValue;
 
             // Retirer de la liste des capacités actives
-            capacitesActives = capacitesActives.filter(c => c !== capaciteValue);
+            if (capaciteValue) {
+                capacitesActives = capacitesActives.filter(c => c !== capaciteValue);
+            }
 
             // Supprimer l'élément
             container.remove();
+
+            // Mettre à jour la visibilité du sentier (si plus de degré 2, on le masque et on purge >2)
+            updateSentierVisibility();
+            // Mettre à jour la visibilité des boutons Retirer
+            if (typeof updateCapaciteRemoveButtons === 'function') updateCapaciteRemoveButtons();
+        }
+
+        // Afficher/Masquer le champ Sentier selon la progression
+        function updateSentierVisibility() {
+            const sentierEl = document.getElementById('sentier');
+            if (!sentierEl) return;
+            const container = sentierEl.closest('.field');
+            const show = hasDegre(2);
+            if (show) {
+                if (container) container.style.display = '';
+            } else {
+                if (container) container.style.display = 'none';
+                // Reset du sentier et purge des capacités > 2
+                if (sentierEl.value !== '') {
+                    sentierEl.value = '';
+                }
+                window._lastSentier = '';
+                removeCapacitesAbove2();
+            }
         }
 
         // ==================== AUTRES ====================
@@ -2165,11 +2301,11 @@
             const particularites = document.getElementById('particularites');
 
             const infos = {
-                'humain': 'Polyvalence : 1-/combat, défausser jusqu\'à  2 cartes pour en piocher autant.\nAdaptable : Début session, choisir 1 famille de compétences, ignorer 1 malus sur cette famille.',
-                'borbybudy': 'Morphotype (Léger ou Massif) : +1/-1 Jeton Vitesse, +1/-1m Mouvement, -1/+1 dégâts Cà C.\nInstincts : 1-/scène, si Bâtons joué sur Survie, +5% (+10% total).',
+                'humain': 'Polyvalence : 1/combat, défausser jusqu\'à  2 cartes pour en piocher autant.\nAdaptable : Début session, choisir 1 famille de compétences, ignorer 1 malus sur cette famille.',
+                'borbybudy': 'Morphotype (Léger ou Massif) : +1/-1 Jeton Vitesse, +1/-1m Mouvement, -1/+1 dégâts Cà C.\nInstincts : 1/scène, si Bâtons joué sur Survie, +5% (+10% total).',
                 'mogwai': 'Bascule (1 carte + 1 Flux) : échanger 2 caractéristiques (FOR→INT, AGI→CHA, CON→VOL).\nAspect mogwaï : +5% charme/inoffensif. Aspect gremlin : +1 dégât si Épées, +5% Combat/intimidation.',
                 'blinker': 'Clignement : défausser 1 carte → téléport 3m (30m si Folle). Action rapide.\nVoracité : coup final → consommer sucré → +1 Flux.\nChaos : si Roue de Fortune, échanger 1 carte main avec défausse + piocher 1.',
-                'entaclute': 'Amphibie : +20% Athlétisme nage OU +10% Soins près d\'eau.\nRot de la Vase : 1-/scène, test CHA → Sbire fuit / Ennemi -10% / Gardien -5%.\nMélancolie : perte Essence → pas de carte conservée fin combat.'
+                'entaclute': 'Amphibie : +20% Athlétisme nage OU +10% Soins près d\'eau.\nRot de la Vase : 1/scène, test CHA → Sbire fuit / Ennemi -10% / Gardien -5%.\nMélancolie : perte Essence → pas de carte conservée fin combat.'
             };
             
             particularites.value = infos[race] || '';
@@ -2213,6 +2349,9 @@
             
             // Initialiser l'affichage de l'Impact
             updateImpactDisplay();
+
+            // Visibilité initiale du Sentier
+            updateSentierVisibility();
         };
         
         // ==================== EXPORT JSON ====================
@@ -2457,20 +2596,7 @@
                             }
 
                             if (typeof addCapacite === 'function') {
-                                addCapacite();
-                                const container = list && list.lastElementChild;
-                                if (container) {
-                                    const sel = container.querySelector('select');
-                                    if (sel) {
-                                        sel.value = capVal;
-                                        if (sel.value !== capVal) {
-                                            // valeur indisponible pour voie/sentier courant: supprimer le conteneur et ignorer
-                                            container.remove();
-                                            return;
-                                        }
-                                    }
-                                    if (typeof selectCapacite === 'function') selectCapacite(container.id, undefined, capVal);
-                                }
+                                addCapacite(capVal, true);
                             }
                         });
                     }
