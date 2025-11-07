@@ -503,23 +503,107 @@
             background: #d32f2f;
         }
 
+        .print-only { display: none; }
+        @page {
+            size: A4 portrait;
+            margin: 12mm;
+        }
         @media print {
+            html, body {
+                background: #fff !important;
+                padding: 0 !important;
+            }
             body {
-                background: white;
-                padding: 0;
+                font-size: 12px;
+                color: #000 !important;
             }
-            
             .container {
-                box-shadow: none;
+                box-shadow: none !important;
+                border-radius: 0 !important;
+                max-width: 100% !important;
+                margin: 0 !important;
             }
-            
+            .header {
+                background: #fff !important;
+                color: #000 !important;
+                text-shadow: none !important;
+                border-bottom: 2px solid #000;
+                padding: 10px 0 12px 0 !important;
+            }
+            .header p {
+                color: #000 !important;
+                opacity: 1 !important;
+            }
+            .menu-bar {
+                display: none !important;
+            }
+            .content {
+                padding: 10px 12px !important;
+            }
+            .section {
+                border-color: #000 !important;
+                page-break-inside: avoid;
+                margin-bottom: 10px !important;
+                background: #fff !important;
+            }
             .section-header {
-                cursor: default;
+                background: #fff !important;
+                color: #000 !important;
+                cursor: default !important;
+                padding: 8px 10px !important;
+                font-size: 14px !important;
             }
-            
             .toggle-icon {
-                display: none;
+                display: none !important;
             }
+            .section-content {
+                display: block !important;
+                background: #fff !important;
+                padding: 10px !important;
+            }
+            .info-box {
+                background: #fff !important;
+                border-left: 0 !important;
+                padding: 8px 10px !important;
+            }
+            .info-box strong {
+                color: #000 !important;
+            }
+            .carac-multiplied,
+            .arme-degats-display,
+            .arme-rang-display,
+            .arme-impact-inline,
+            .arme-impact-badge {
+                color: #000 !important;
+                background: #fff !important;
+            }
+            .arme-impact-badge {
+                border: 1px solid #000 !important;
+            }
+            .add-button,
+            .remove-arme-btn,
+            button {
+                display: none !important;
+            }
+            input, select, textarea {
+                display: none !important;
+            }
+            label { color: #000 !important; display: inline !important; margin-right: 6px !important; }
+            table {
+                width: 100% !important;
+                border-collapse: collapse !important;
+                page-break-inside: auto;
+            }
+            thead { display: table-header-group; }
+            tr, td, th { page-break-inside: avoid; page-break-after: auto; }
+            th, td {
+                border: 1px solid #000 !important;
+                padding: 6px !important;
+            }
+            h1, h2, h3 { color: #000 !important; }
+            .print-only { display: inline !important; color: #000 !important; }
+            .print-block { display: block !important; white-space: pre-wrap; }
+            .hide-on-print { display: none !important; }
         }
 
         .info-box {
@@ -546,6 +630,50 @@
         .menu-bar .add-button {
             margin: 0;
         }
+
+        /* Impression ultra-compacte: retrait des bordures de section et réduction des espacements */
+        @media print {
+            body { line-height: 1.15 !important; }
+            .content { padding: 6px 8px !important; }
+            .section { border: none !important; margin-bottom: 4px !important; background: #fff !important; }
+            .section-header { padding: 4px 8px !important; font-size: 13px !important; }
+            .section-content { padding: 6px 8px !important; }
+            .section-header + .section-content { padding-top: 2px !important; }
+            h1, h2, h3 { margin: 0 0 4px 0 !important; }
+            label { margin-right: 4px !important; }
+            .row { gap: 8px !important; margin-bottom: 6px !important; }
+            .info-box { margin: 4px 0 !important; padding: 4px 6px !important; background: #fff !important; border: 0 !important; }
+            table thead th { background: #fff !important; color: #000 !important; }
+            th, td { padding: 4px !important; }
+
+            /* Caractéristiques en une ligne, sans bordure */
+            .caracteristiques { gap: 6px !important; }
+            .carac-box { background: transparent !important; border: none !important; border-radius: 0 !important; padding: 0 !important; box-shadow: none !important; text-align: left !important; }
+            .carac-box, .carac-box * { white-space: nowrap !important; }
+            .carac-box label { display: inline !important; margin: 0 4px 0 0 !important; color: #000 !important; font-size: 12px !important; }
+            .carac-value { display: inline-flex !important; align-items: baseline !important; gap: 4px !important; margin: 0 !important; }
+            .carac-multiplied { background: transparent !important; padding: 0 !important; border-radius: 0 !important; font-size: 1em !important; font-weight: 600 !important; }
+            .carac-validation { margin: 2px 0 !important; padding: 4px !important; background: transparent !important; border: 0 !important; color: #000 !important; }
+
+            /* Ressources dérivées en une ligne, sans bordure */
+            .ressource-box { background: transparent !important; color: #000 !important; padding: 0 !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; }
+            .ressource-box h3 { display: inline !important; margin: 0 6px 0 0 !important; font-size: 13px !important; color: #000 !important; }
+            .ressource-values { display: inline-flex !important; align-items: baseline !important; gap: 4px !important; }
+            .ressource-values .separator { margin: 0 2px !important; }
+
+            /* Compétences: bloc de validation minimal et colonnes alignées */
+            .competences-validation { background: transparent !important; border: 0 !important; padding: 0 !important; margin: 2px 0 !important; color: #000 !important; }
+            .competences-table { table-layout: fixed !important; width: 100% !important; }
+            .competences-table thead th:nth-child(1), .competences-table tbody td:nth-child(1) { width: 38% !important; }
+            .competences-table thead th:nth-child(2), .competences-table tbody td:nth-child(2) { width: 10% !important; text-align: center !important; }
+            .competences-table thead th:nth-child(3), .competences-table tbody td:nth-child(3) { width: 18% !important; }
+            .competences-table thead th:nth-child(4), .competences-table tbody td:nth-child(4) { width: 20% !important; }
+            .competences-table thead th:nth-child(5), .competences-table tbody td:nth-child(5) { width: 14% !important; }
+
+            /* Éviter une coupure inutile avant Armes et garder la section groupée */
+            #section-armes { break-before: avoid-page !important; page-break-before: avoid !important; page-break-inside: avoid !important; }
+            #section-ressources { page-break-after: avoid !important; }
+        }
     </style>
 </head>
 <body>
@@ -558,6 +686,7 @@
         <div class="menu-bar">
             <button class="add-button" onclick="exportCharacterJson()" aria-label="Exporter les données">Exporter</button>
             <button class="add-button" onclick="triggerImport()" aria-label="Importer des données JSON">Importer</button>
+            <button class="add-button" onclick="printFiche()" aria-label="Imprimer la fiche en A4">Imprimer</button>
             <input type="file" id="import-file" accept="application/json" style="display:none" onchange="onImportFileChosen(event)">
         </div>
 
@@ -689,7 +818,7 @@
             </div>
 
             <!-- SECTION RESSOURCES -->
-            <div class="section">
+            <div class="section" id="section-ressources">
                 <div class="section-header" onclick="toggleSection(this)">
                     <span>Ressources et Valeurs Dérivées</span>
                     <span class="toggle-icon">▼</span>
@@ -749,7 +878,7 @@
                     </div>
 
                     <h3 style="margin-top: 20px; color: #667eea;">Survie & Exploration</h3>
-                    <table id="competences-survie">
+                    <table id="competences-survie" class="competences-table">
                         <thead>
                             <tr>
                                 <th>Compétence</th>
@@ -800,7 +929,7 @@
                     </table>
 
                     <h3 style="margin-top: 20px; color: #667eea;">Combat</h3>
-                    <table id="competences-combat">
+                    <table id="competences-combat" class="competences-table">
                         <thead>
                             <tr>
                                 <th>Compétence</th>
@@ -851,7 +980,7 @@
                     </table>
 
                     <h3 style="margin-top: 20px; color: #667eea;">Savoirs & Techniques</h3>
-                    <table id="competences-savoirs">
+                    <table id="competences-savoirs" class="competences-table">
                         <thead>
                             <tr>
                                 <th>Compétence</th>
@@ -902,7 +1031,7 @@
                     </table>
 
                     <h3 style="margin-top: 20px; color: #667eea;">Influence & Social</h3>
-                    <table id="competences-social">
+                    <table id="competences-social" class="competences-table">
                         <thead>
                             <tr>
                                 <th>Compétence</th>
@@ -1010,7 +1139,7 @@
             </div>
 
             <!-- SECTION ARMES -->
-            <div class="section">
+            <div class="section" id="section-armes">
                 <div class="section-header" onclick="toggleSection(this)">
                     <span>Armes et Équipement</span>
                     <span class="toggle-icon">▼</span>
@@ -3209,6 +3338,317 @@
                 alert('Erreur pendant l\'application des données importées: ' + e.message);
             }
         }
+        function printFiche() {
+            try {
+                const sections = Array.from(document.querySelectorAll('.section'));
+                const prevStates = sections.map(sec => {
+                    const content = sec.querySelector('.section-content');
+                    return {
+                        section: sec,
+                        content,
+                        display: content ? content.style.display : '',
+                        wasCollapsed: sec.classList.contains('collapsed')
+                    };
+                });
+
+                // Ouvrir toutes les sections pour l'impression
+                prevStates.forEach(s => {
+                    if (s.content) s.content.style.display = 'block';
+                    s.section.classList.remove('collapsed');
+                });
+
+                // Déplacer la section Armes juste après Ressources pour l'impression
+                let armesSection = document.getElementById('section-armes');
+                let ressourcesSection = document.getElementById('section-ressources');
+                let armesPlaceholder = null;
+                if (armesSection && ressourcesSection && armesSection !== ressourcesSection.nextElementSibling) {
+                    armesPlaceholder = document.createComment('print-armes-placeholder');
+                    armesSection.parentNode.insertBefore(armesPlaceholder, armesSection);
+                    ressourcesSection.parentNode.insertBefore(armesSection, ressourcesSection.nextSibling);
+                }
+
+                // Construire un instantané "texte seul" pour l'impression
+                const createdNodes = [];
+                const headerThsHidden = [];
+                const addCreated = (node) => { if (node) createdNodes.push(node); };
+
+                function insertPrintValueAfter(target, text, isBlock) {
+                    if (!target || !target.parentNode) return null;
+                    const el = document.createElement(isBlock ? 'div' : 'span');
+                    el.className = 'print-only' + (isBlock ? ' print-block' : '');
+                    let t = (text == null ? '' : String(text));
+                    // Compact: ne pas préserver les retours, minimiser les espaces
+                    t = t.replace(/\s+/g, ' ').trim();
+                    // Champs vides: pas de tiret, garder un espace insécable minimal pour faciliter l'écriture
+                    el.textContent = t ? t : '\u00A0';
+                    target.parentNode.insertBefore(el, target.nextSibling);
+                    addCreated(el);
+                    return el;
+                }
+                function insertValueForControl(ctrl, text, isBlock) {
+                    function getLabel(ctrlEl) {
+                        try {
+                            if (ctrlEl.id) {
+                                const byFor = document.querySelector('label[for="' + ctrlEl.id + '"]');
+                                if (byFor) return byFor;
+                            }
+                            const field = ctrlEl.closest && ctrlEl.closest('.field');
+                            if (field) {
+                                const lbl = field.querySelector('label');
+                                if (lbl) return lbl;
+                            }
+                        } catch (e) { /* noop */ }
+                        return null;
+                    }
+                    const anchor = getLabel(ctrl) || ctrl;
+                    return insertPrintValueAfter(anchor, text, !!isBlock);
+                }
+
+                // Gérer les cas spécifiques (table Compétences et table Armes)
+                const handled = new Set();
+
+                // Compétences
+                document.querySelectorAll('tr.competence-row').forEach(row => {
+                    const rankInput = row.querySelector('td:nth-child(2) input');
+                    const familySelect = row.querySelector('td:nth-child(4) select');
+                    if (rankInput) {
+                        insertPrintValueAfter(rankInput, rankInput.value || '0', false);
+                        handled.add(rankInput);
+                    }
+                    if (familySelect) {
+                        const selText = (familySelect.options && familySelect.selectedIndex >= 0)
+                            ? familySelect.options[familySelect.selectedIndex].text
+                            : (familySelect.value || '');
+                        insertPrintValueAfter(familySelect, selText, false);
+                        handled.add(familySelect);
+                    }
+                });
+
+                // Armes
+                document.querySelectorAll('#armes-list .arme-row').forEach(row => {
+                    const nom = row.querySelector('td:nth-child(1) input');
+                    const typeSel = row.querySelector('.arme-type-select');
+                    const notes = row.querySelector('td:nth-child(5) input');
+                    if (nom) { insertPrintValueAfter(nom, nom.value || '', false); handled.add(nom); }
+                    if (typeSel) {
+                        const txt = (typeSel.options && typeSel.selectedIndex >= 0) ? typeSel.options[typeSel.selectedIndex].text : (typeSel.value || '');
+                        insertPrintValueAfter(typeSel, txt, false); handled.add(typeSel);
+                    }
+                    if (notes) { insertPrintValueAfter(notes, notes.value || '', false); handled.add(notes); }
+                });
+
+                // Masquer l'en-tête "Actions" et la colonne correspondante du tableau Armes
+                try {
+                    const armesTbody = document.getElementById('armes-list');
+                    if (armesTbody && armesTbody.parentElement) {
+                        const table = armesTbody.parentElement;
+                        if (table.tHead) {
+                            const ths = table.tHead.querySelectorAll('th');
+                            if (ths && ths.length > 0) {
+                                const last = ths[ths.length - 1];
+                                headerThsHidden.push({ el: last, prev: last.style.display });
+                                last.style.display = 'none';
+                            }
+                        }
+                        // Masquer les cellules de la dernière colonne (Actions)
+                        const rows = table.tBodies[0] ? Array.from(table.tBodies[0].rows) : [];
+                        rows.forEach(r => {
+                            const cell = r.cells && r.cells[r.cells.length - 1];
+                            if (cell) {
+                                headerThsHidden.push({ el: cell, prev: cell.style.display });
+                                cell.style.display = 'none';
+                            }
+                        });
+                    }
+                } catch (e) { /* ignore */ }
+
+                // Générique pour tous les autres champs non traités
+                const allCtrls = Array.from(document.querySelectorAll('input, select, textarea'));
+                allCtrls.forEach(ctrl => {
+                    if (handled.has(ctrl)) return;
+                    if (ctrl.tagName === 'INPUT') {
+                        const type = (ctrl.type || 'text').toLowerCase();
+                        if (type === 'button' || type === 'submit' || type === 'reset' || type === 'file') return;
+                        if (type === 'checkbox' || type === 'radio') {
+                            const val = ctrl.checked ? 'Oui' : 'Non';
+                            insertValueForControl(ctrl, val, false);
+                            return;
+                        }
+                        insertValueForControl(ctrl, ctrl.value || '', false);
+                    } else if (ctrl.tagName === 'SELECT') {
+                        const txt = (ctrl.options && ctrl.selectedIndex >= 0) ? ctrl.options[ctrl.selectedIndex].text : (ctrl.value || '');
+                        insertValueForControl(ctrl, txt, false);
+                    } else if (ctrl.tagName === 'TEXTAREA') {
+                        insertValueForControl(ctrl, ctrl.value || '', false);
+                    }
+                });
+
+                const restore = () => {
+                    try {
+                        prevStates.forEach(s => {
+                            if (s.content) s.content.style.display = s.display;
+                            if (s.wasCollapsed) {
+                                s.section.classList.add('collapsed');
+                            } else {
+                                s.section.classList.remove('collapsed');
+                            }
+                        });
+                    } catch (e) {
+                        console.warn('Restauration après impression incomplète:', e);
+                    }
+                    // Restaurer la position d'origine de la section Armes
+                    try {
+                        if (armesPlaceholder && armesSection && armesPlaceholder.parentNode) {
+                            armesPlaceholder.parentNode.insertBefore(armesSection, armesPlaceholder);
+                            armesPlaceholder.remove();
+                        }
+                    } catch (e) { /* ignore */ }
+                    // Nettoyer les éléments d'impression ajoutés
+                    try {
+                        createdNodes.forEach(n => { if (n && n.parentNode) n.parentNode.removeChild(n); });
+                    } catch (e) { /* ignore */ }
+                    // Restaurer les en-têtes masqués
+                    try {
+                        headerThsHidden.forEach(it => { if (it && it.el) it.el.style.display = it.prev || ''; });
+                    } catch (e) { /* ignore */ }
+                    if (mql && typeof mql.removeEventListener === 'function') {
+                        mql.removeEventListener('change', onChange);
+                    } else if (mql && typeof mql.removeListener === 'function') {
+                        mql.removeListener(onChange);
+                    }
+                    window.removeEventListener('afterprint', restore);
+                };
+
+                // Assurer la restauration quel que soit le navigateur
+                const mql = (window.matchMedia && window.matchMedia('print')) || null;
+                const onChange = (e) => { if (!e.matches) restore(); };
+                if (mql) {
+                    if (typeof mql.addEventListener === 'function') mql.addEventListener('change', onChange);
+                    else if (typeof mql.addListener === 'function') mql.addListener(onChange);
+                }
+                window.addEventListener('afterprint', restore);
+
+                // Lancer l'impression
+                window.print();
+            } catch (err) {
+                console.warn('Erreur lors de la préparation de l\'impression:', err);
+                window.print();
+            }
+        }
+    // Hook Ctrl+P: préparer un instantané texte puis restaurer après impression
+        (function(){
+            let __cleanup = null;
+            function insertPrintValueAfter(target, text, isBlock) {
+                if (!target || !target.parentNode) return null;
+                const el = document.createElement(isBlock ? 'div' : 'span');
+                el.className = 'print-only' + (isBlock ? ' print-block' : '');
+                let t = (text == null ? '' : String(text));
+                t = t.replace(/\s+/g, ' ').trim();
+                el.textContent = t ? t : '\u00A0';
+                target.parentNode.insertBefore(el, target.nextSibling);
+                return el;
+            }
+            function buildSnapshot(){
+                if (document.querySelector('.print-only')) return;
+                const sections = Array.from(document.querySelectorAll('.section'));
+                const prevStates = sections.map(sec => {
+                    const content = sec.querySelector('.section-content');
+                    return { section: sec, content, display: content ? content.style.display : '', wasCollapsed: sec.classList.contains('collapsed') };
+                });
+                prevStates.forEach(s => { if (s.content) s.content.style.display = 'block'; s.section.classList.remove('collapsed'); });
+
+                // Déplacer la section Armes juste après Ressources pour l'impression (Ctrl+P)
+                let armesSection = document.getElementById('section-armes');
+                let ressourcesSection = document.getElementById('section-ressources');
+                let armesPlaceholder = null;
+                if (armesSection && ressourcesSection && armesSection !== ressourcesSection.nextElementSibling) {
+                    armesPlaceholder = document.createComment('print-armes-placeholder');
+                    armesSection.parentNode.insertBefore(armesPlaceholder, armesSection);
+                    ressourcesSection.parentNode.insertBefore(armesSection, ressourcesSection.nextSibling);
+                }
+
+                const createdNodes = [];
+                const headerThsHidden = [];
+                const handled = new Set();
+
+                document.querySelectorAll('tr.competence-row').forEach(row => {
+                    const rankInput = row.querySelector('td:nth-child(2) input');
+                    const familySelect = row.querySelector('td:nth-child(4) select');
+                    if (rankInput) { createdNodes.push(insertPrintValueAfter(rankInput, rankInput.value || '0', false)); handled.add(rankInput); }
+                    if (familySelect) {
+                        const selText = (familySelect.options && familySelect.selectedIndex >= 0) ? familySelect.options[familySelect.selectedIndex].text : (familySelect.value || '');
+                        createdNodes.push(insertPrintValueAfter(familySelect, selText, false)); handled.add(familySelect);
+                    }
+                });
+
+                document.querySelectorAll('#armes-list .arme-row').forEach(row => {
+                    const nom = row.querySelector('td:nth-child(1) input');
+                    const typeSel = row.querySelector('.arme-type-select');
+                    const notes = row.querySelector('td:nth-child(5) input');
+                    if (nom) { createdNodes.push(insertPrintValueAfter(nom, nom.value || '', false)); handled.add(nom); }
+                    if (typeSel) {
+                        const txt = (typeSel.options && typeSel.selectedIndex >= 0) ? typeSel.options[typeSel.selectedIndex].text : (typeSel.value || '');
+                        createdNodes.push(insertPrintValueAfter(typeSel, txt, false)); handled.add(typeSel);
+                    }
+                    if (notes) { createdNodes.push(insertPrintValueAfter(notes, notes.value || '', false)); handled.add(notes); }
+                });
+                try {
+                    const armesTbody = document.getElementById('armes-list');
+                    if (armesTbody && armesTbody.parentElement) {
+                        const table = armesTbody.parentElement;
+                        if (table.tHead) {
+                            const ths = table.tHead.querySelectorAll('th');
+                            if (ths && ths.length > 0) {
+                                const last = ths[ths.length - 1];
+                                headerThsHidden.push({ el: last, prev: last.style.display });
+                                last.style.display = 'none';
+                            }
+                        }
+                        const rows = table.tBodies[0] ? Array.from(table.tBodies[0].rows) : [];
+                        rows.forEach(r => {
+                            const cell = r.cells && r.cells[r.cells.length - 1];
+                            if (cell) { headerThsHidden.push({ el: cell, prev: cell.style.display }); cell.style.display = 'none'; }
+                        });
+                    }
+                } catch (e) {}
+
+                Array.from(document.querySelectorAll('input, select, textarea')).forEach(ctrl => {
+                    if (handled.has(ctrl)) return;
+                    if (ctrl.tagName === 'INPUT') {
+                        const type = (ctrl.type || 'text').toLowerCase();
+                        if (type === 'button' || type === 'submit' || type === 'reset' || type === 'file') return;
+                        if (type === 'checkbox' || type === 'radio') {
+                            createdNodes.push(insertPrintValueAfter(ctrl, ctrl.checked ? 'Oui' : 'Non', false));
+                            return;
+                        }
+                        createdNodes.push(insertPrintValueAfter(ctrl, ctrl.value || '', false));
+                    } else if (ctrl.tagName === 'SELECT') {
+                        const txt = (ctrl.options && ctrl.selectedIndex >= 0) ? ctrl.options[ctrl.selectedIndex].text : (ctrl.value || '');
+                        createdNodes.push(insertPrintValueAfter(ctrl, txt, false));
+                    } else if (ctrl.tagName === 'TEXTAREA') {
+                        createdNodes.push(insertPrintValueAfter(ctrl, ctrl.value || '', false));
+                    }
+                });
+
+                __cleanup = function(){
+                    try { prevStates.forEach(s => { if (s.content) s.content.style.display = s.display; s.section.classList[s.wasCollapsed ? 'add' : 'remove']('collapsed'); }); } catch (e) {}
+                    // Restaurer la position d'origine de la section Armes si déplacée
+                    try {
+                        if (armesPlaceholder && armesSection && armesPlaceholder.parentNode) {
+                            armesPlaceholder.parentNode.insertBefore(armesSection, armesPlaceholder);
+                            armesPlaceholder.remove();
+                        }
+                    } catch (e) {}
+                    try { createdNodes.forEach(n => { if (n && n.parentNode) n.parentNode.removeChild(n); }); } catch (e) {}
+                    try { headerThsHidden.forEach(it => { if (it && it.el) it.el.style.display = it.prev || ''; }); } catch (e) {}
+                    __cleanup = null;
+                };
+            }
+            function onBefore(){ try { buildSnapshot(); } catch (e) {} }
+            function onAfter(){ try { if (__cleanup) __cleanup(); } catch (e) {} }
+            window.addEventListener('beforeprint', onBefore);
+            window.addEventListener('afterprint', onAfter);
+        })();
     </script>
 </body>
 </html>
